@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Flag, Check, X, Palette } from "lucide-react";
 import { colorClass, NoteColor, rotationFor } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
+import { NoteReactions } from "./NoteReactions";
 import {
   Popover,
   PopoverContent,
@@ -29,6 +30,7 @@ export interface NoteData {
   x: number;
   y: number;
   user_id: string;
+  created_at?: string;
 }
 
 interface Props {
@@ -36,26 +38,30 @@ interface Props {
   authorNickname?: string;
   isOwner: boolean;
   isAuthed: boolean;
+  currentUserId: string | null;
+  scale: number;
+  screenToWorld: (clientX: number, clientY: number) => { x: number; y: number };
   onDragEnd: (id: string, x: number, y: number) => void;
   onUpdate: (id: string, patch: Partial<Pick<NoteData, "content" | "color">>) => void;
   onDelete: (id: string) => void;
   onReport: (id: string, reason: string) => void;
-  boardRef: React.RefObject<HTMLDivElement>;
 }
 
 const NOTE_W = 180;
-const NOTE_H = 180;
+const NOTE_H = 200;
 
 export const StickyNote = ({
   note,
   authorNickname,
   isOwner,
   isAuthed,
+  currentUserId,
+  scale,
+  screenToWorld,
   onDragEnd,
   onUpdate,
   onDelete,
   onReport,
-  boardRef,
 }: Props) => {
   const [pos, setPos] = useState({ x: note.x, y: note.y });
   const [dragging, setDragging] = useState(false);
@@ -73,23 +79,17 @@ export const StickyNote = ({
   const onPointerDown = (e: React.PointerEvent) => {
     if (!isOwner || editing) return;
     if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
-    const board = boardRef.current?.getBoundingClientRect();
-    if (!board) return;
-    dragRef.current = {
-      dx: e.clientX - board.left - pos.x,
-      dy: e.clientY - board.top - pos.y,
-    };
+    e.stopPropagation(); // don't pan canvas
+    const w = screenToWorld(e.clientX, e.clientY);
+    dragRef.current = { dx: w.x - pos.x, dy: w.y - pos.y };
     setDragging(true);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging || !dragRef.current) return;
-    const board = boardRef.current?.getBoundingClientRect();
-    if (!board) return;
-    const nx = Math.max(0, Math.min(board.width - NOTE_W, e.clientX - board.left - dragRef.current.dx));
-    const ny = Math.max(0, Math.min(board.height - NOTE_H, e.clientY - board.top - dragRef.current.dy));
-    setPos({ x: nx, y: ny });
+    const w = screenToWorld(e.clientX, e.clientY);
+    setPos({ x: w.x - dragRef.current.dx, y: w.y - dragRef.current.dy });
   };
 
   const onPointerUp = () => {
@@ -108,10 +108,15 @@ export const StickyNote = ({
 
   const rot = rotationFor(note.id);
 
+  const dateStr = note.created_at
+    ? new Date(note.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    : "";
+
   return (
     <div
+      data-note
       className={cn(
-        "sticky-note absolute select-none rounded-sm",
+        "sticky-note group absolute select-none rounded-sm",
         colorClass(note.color),
         dragging && "dragging",
         isOwner ? "cursor-grab" : "cursor-default"
@@ -120,14 +125,14 @@ export const StickyNote = ({
         left: pos.x,
         top: pos.y,
         width: NOTE_W,
-        height: NOTE_H,
+        minHeight: NOTE_H,
         transform: dragging ? undefined : `rotate(${rot}deg)`,
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      onDoubleClick={() => isOwner && setEditing(true)}
+      onDoubleClick={(e) => { e.stopPropagation(); isOwner && setEditing(true); }}
     >
       {/* Pin */}
       <div className="pin absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full" data-no-drag />
@@ -158,10 +163,18 @@ export const StickyNote = ({
           <p className="flex-1 overflow-hidden whitespace-pre-wrap break-words font-note text-base leading-snug text-foreground">
             {note.content}
           </p>
+          <div className="mt-1 border-t border-foreground/10 pt-1.5">
+            <NoteReactions noteId={note.id} userId={currentUserId} />
+          </div>
           <div className="flex items-end justify-between pt-1">
-            <span className="font-handwritten text-sm opacity-70">
-              — {authorNickname ?? "anon"}
-            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="font-handwritten text-sm opacity-70">
+                — {authorNickname ?? "anon"}
+              </span>
+              {dateStr && (
+                <span className="text-[10px] opacity-50">{dateStr}</span>
+              )}
+            </div>
             <div className="note-actions flex gap-0.5 opacity-0 transition-opacity" data-no-drag>
               {isOwner ? (
                 <>
