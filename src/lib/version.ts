@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v2.1.0";
+export const APP_VERSION = "v2.1.1";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,15 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v2.1.1",
+    date: "2026-04-19",
+    notes: [
+      "🐛 Fixed: like/dislike buttons can now be undone or switched (realtime UPDATE/DELETE events were being dropped)",
+      "🐛 Fixed: removing an emoji reaction now updates the count instantly",
+      "🐛 Fixed: Inbox now receives live notifications for likes, dislikes, reactions, and reports",
+    ],
+  },
   {
     version: "v2.1.0",
     date: "2026-04-19",
