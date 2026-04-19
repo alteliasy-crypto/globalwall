@@ -9,6 +9,7 @@ export interface ViewTransform {
 export interface InfiniteCanvasHandle {
   screenToWorld: (clientX: number, clientY: number) => { x: number; y: number };
   recenter: () => void;
+  zoomBy: (factor: number) => void;
   getTransform: () => ViewTransform;
 }
 
@@ -40,6 +41,15 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
         };
       },
       recenter: () => setT({ x: 0, y: 0, scale: 1 }),
+      zoomBy: (factor) => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, t.scale * factor));
+        const f = newScale / t.scale;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        setT({ scale: newScale, x: cx - (cx - t.x) * f, y: cy - (cy - t.y) * f });
+      },
       getTransform: () => t,
     }));
 

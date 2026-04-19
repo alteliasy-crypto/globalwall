@@ -182,7 +182,7 @@ const Index = () => {
           size="icon"
           variant="ghost"
           className="h-8 w-8"
-          onClick={() => setTransform((t) => ({ ...t, scale: Math.min(2.5, t.scale * 1.2) }))}
+          onClick={() => canvasRef.current?.zoomBy(1.2)}
           title="Zoom in"
         >
           <ZoomIn className="h-4 w-4" />
@@ -191,7 +191,7 @@ const Index = () => {
           size="icon"
           variant="ghost"
           className="h-8 w-8"
-          onClick={() => setTransform((t) => ({ ...t, scale: Math.max(0.25, t.scale / 1.2) }))}
+          onClick={() => canvasRef.current?.zoomBy(1 / 1.2)}
           title="Zoom out"
         >
           <ZoomOut className="h-4 w-4" />
