@@ -92,6 +92,34 @@ export const Toolbar = ({
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <FileText className="mr-2 h-4 w-4" /> Dev notes ({APP_VERSION})
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="font-handwritten text-3xl">Developer notes</DialogTitle>
+                    <DialogDescription className="font-note text-base">
+                      What's new and changing on the wall.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-2 space-y-5">
+                    {DEV_NOTES.map((entry) => (
+                      <div key={entry.version} className="rounded-lg border border-border/50 bg-muted/40 p-3">
+                        <div className="mb-2 flex items-baseline justify-between">
+                          <span className="font-handwritten text-2xl font-bold text-primary">{entry.version}</span>
+                          <span className="text-xs text-muted-foreground">{entry.date}</span>
+                        </div>
+                        <ul className="space-y-1.5 font-note text-sm text-foreground">
+                          {entry.notes.map((n, i) => <li key={i}>{n}</li>)}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
               <DropdownMenuItem onClick={onSignOut} className="text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Start over
               </DropdownMenuItem>
