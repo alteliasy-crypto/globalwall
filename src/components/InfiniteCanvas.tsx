@@ -79,11 +79,12 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
     };
 
     const onPointerMove = (e: React.PointerEvent) => {
-      if (!panRef.current) return;
+      const pan = panRef.current;
+      if (!pan) return;
       setT((prev) => ({
         ...prev,
-        x: panRef.current!.ox + (e.clientX - panRef.current!.startX),
-        y: panRef.current!.oy + (e.clientY - panRef.current!.startY),
+        x: pan.ox + (e.clientX - pan.startX),
+        y: pan.oy + (e.clientY - pan.startY),
       }));
     };
 
