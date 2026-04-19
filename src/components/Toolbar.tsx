@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "./ColorPicker";
 import { NoteColor } from "@/lib/noteColors";
-import { Plus, LogOut, Sparkles, HelpCircle } from "lucide-react";
+import { Plus, LogOut, Sparkles, HelpCircle, FileText } from "lucide-react";
+import { APP_VERSION, DEV_NOTES } from "@/lib/version";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +40,9 @@ export const Toolbar = ({
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />
           <h1 className="font-handwritten text-2xl font-bold leading-none">Global Wall</h1>
+          <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
+            {APP_VERSION}
+          </span>
           <span className="hidden text-xs text-muted-foreground sm:inline">
             · {totalCount} note{totalCount === 1 ? "" : "s"} live
           </span>

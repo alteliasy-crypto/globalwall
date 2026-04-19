@@ -90,6 +90,15 @@ export function useAuth() {
     return { error: null };
   }
 
+  async function startOver() {
+    if (user) {
+      // Delete this user's notes so the 0/3 count is truthful & old notes don't linger
+      await supabase.from("notes").delete().eq("user_id", user.id);
+    }
+    await supabase.auth.signOut();
+    window.location.reload();
+  }
+
   return {
     user,
     profile,
@@ -97,6 +106,7 @@ export function useAuth() {
     needsCaptcha,
     signInWithCaptcha,
     setNickname,
+    startOver,
     refreshProfile: () => user && loadProfile(user.id),
   };
 }
