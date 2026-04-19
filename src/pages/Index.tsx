@@ -170,6 +170,7 @@ const Index = () => {
         onAddNote={addNote}
         onSignOut={startOver}
         canAdd={!!profile && !profile.is_banned && myNotes.length < 3}
+        inboxSlot={<Inbox userId={user?.id ?? null} />}
       />
 
       {/* Canvas controls */}
