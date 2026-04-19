@@ -114,8 +114,9 @@ export const StickyNote = ({
 
   return (
     <div
+      data-note
       className={cn(
-        "sticky-note absolute select-none rounded-sm",
+        "sticky-note group absolute select-none rounded-sm",
         colorClass(note.color),
         dragging && "dragging",
         isOwner ? "cursor-grab" : "cursor-default"
@@ -124,14 +125,14 @@ export const StickyNote = ({
         left: pos.x,
         top: pos.y,
         width: NOTE_W,
-        height: NOTE_H,
+        minHeight: NOTE_H,
         transform: dragging ? undefined : `rotate(${rot}deg)`,
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      onDoubleClick={() => isOwner && setEditing(true)}
+      onDoubleClick={(e) => { e.stopPropagation(); isOwner && setEditing(true); }}
     >
       {/* Pin */}
       <div className="pin absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full" data-no-drag />
