@@ -137,6 +137,8 @@
     z-index: 50;
   }
 
+  .sticky-note:hover .note-actions { opacity: 1; }
+
   .pin {
     background: radial-gradient(circle at 35% 35%, hsl(0 85% 70%), hsl(0 80% 45%) 60%, hsl(0 75% 30%));
     box-shadow:

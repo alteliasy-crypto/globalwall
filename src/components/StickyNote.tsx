@@ -162,7 +162,7 @@ export const StickyNote = ({
             <span className="font-handwritten text-sm opacity-70">
               — {authorNickname ?? "anon"}
             </span>
-            <div className="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100" data-no-drag>
+            <div className="note-actions flex gap-0.5 opacity-0 transition-opacity" data-no-drag>
               {isOwner ? (
                 <>
                   <Popover>
@@ -238,10 +238,6 @@ export const StickyNote = ({
         </div>
       )}
 
-      {/* Always-visible action overlay on hover via group */}
-      <style>{`
-        .sticky-note:hover [data-no-drag] .group-hover\\:opacity-100 { opacity: 1; }
-      `}</style>
     </div>
   );
 };
