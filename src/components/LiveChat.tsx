@@ -191,10 +191,49 @@ export const LiveChat = ({ userId, nickname }: Props) => {
             )}
           </div>
 
+          {/* Typing indicator */}
+          <div className="h-5 px-3 text-xs italic text-muted-foreground">
+            {(() => {
+              const names = Object.values(typingUsers).map((u) => u.nickname);
+              if (names.length === 0) return null;
+              const label =
+                names.length === 1 ? `${names[0]} is typing` :
+                names.length === 2 ? `${names[0]} and ${names[1]} are typing` :
+                `${names.length} people are typing`;
+              return (
+                <span className="font-handwritten">
+                  {label}
+                  <span className="ml-0.5 inline-flex gap-0.5">
+                    <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "0ms" }} />
+                    <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "150ms" }} />
+                    <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "300ms" }} />
+                  </span>
+                </span>
+              );
+            })()}
+          </div>
+
           <div className="flex items-center gap-1.5 border-t border-border/40 p-2">
             <Input
               value={draft}
-              onChange={(e) => setDraft(e.target.value)}
+              onChange={(e) => {
+                setDraft(e.target.value);
+                const now = Date.now();
+                if (
+                  e.target.value.length > 0 &&
+                  channelRef.current &&
+                  userId &&
+                  nickname &&
+                  now - lastTypingSentRef.current > 2000
+                ) {
+                  lastTypingSentRef.current = now;
+                  channelRef.current.send({
+                    type: "broadcast",
+                    event: "typing",
+                    payload: { user_id: userId, nickname },
+                  });
+                }
+              }}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder="say something nice..."
               maxLength={200}
