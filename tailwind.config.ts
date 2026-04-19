@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        note: {
+          yellow: "hsl(var(--note-yellow))",
+          pink: "hsl(var(--note-pink))",
+          blue: "hsl(var(--note-blue))",
+          green: "hsl(var(--note-green))",
+          orange: "hsl(var(--note-orange))",
+          purple: "hsl(var(--note-purple))",
+          mint: "hsl(var(--note-mint))",
+          coral: "hsl(var(--note-coral))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
