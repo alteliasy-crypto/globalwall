@@ -28,8 +28,10 @@ export const LiveChat = ({ userId, nickname }: Props) => {
   const [draft, setDraft] = useState("");
   const [online, setOnline] = useState(0);
   const [unread, setUnread] = useState(0);
+  const [typingUsers, setTypingUsers] = useState<Record<string, { nickname: string; ts: number }>>({});
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastTypingSentRef = useRef<number>(0);
 
   // Setup chat channel + presence
   useEffect(() => {
@@ -43,6 +45,17 @@ export const LiveChat = ({ userId, nickname }: Props) => {
       const m = payload as ChatMsg;
       setMessages((prev) => [...prev, m]);
       setUnread((u) => (open ? 0 : u + 1));
+      setTypingUsers((prev) => {
+        const next = { ...prev };
+        delete next[m.user_id];
+        return next;
+      });
+    });
+
+    ch.on("broadcast", { event: "typing" }, ({ payload }) => {
+      const { user_id, nickname: nn } = payload as { user_id: string; nickname: string };
+      if (user_id === userId) return;
+      setTypingUsers((prev) => ({ ...prev, [user_id]: { nickname: nn, ts: Date.now() } }));
     });
 
     ch.on("presence", { event: "sync" }, () => {
@@ -62,11 +75,20 @@ export const LiveChat = ({ userId, nickname }: Props) => {
     };
   }, [userId, nickname]);
 
-  // Expire old messages every second
+  // Expire old messages + stale typing indicators every second
   useEffect(() => {
     const t = setInterval(() => {
       const now = Date.now();
       setMessages((prev) => prev.filter((m) => now - m.ts < TTL_MS));
+      setTypingUsers((prev) => {
+        const next: typeof prev = {};
+        let changed = false;
+        for (const [k, v] of Object.entries(prev)) {
+          if (now - v.ts < 4000) next[k] = v;
+          else changed = true;
+        }
+        return changed ? next : prev;
+      });
     }, 1000);
     return () => clearInterval(t);
   }, []);
@@ -169,10 +191,49 @@ export const LiveChat = ({ userId, nickname }: Props) => {
             )}
           </div>
 
+          {/* Typing indicator */}
+          <div className="h-5 px-3 text-xs italic text-muted-foreground">
+            {(() => {
+              const names = Object.values(typingUsers).map((u) => u.nickname);
+              if (names.length === 0) return null;
+              const label =
+                names.length === 1 ? `${names[0]} is typing` :
+                names.length === 2 ? `${names[0]} and ${names[1]} are typing` :
+                `${names.length} people are typing`;
+              return (
+                <span className="font-handwritten">
+                  {label}
+                  <span className="ml-0.5 inline-flex gap-0.5">
+                    <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "0ms" }} />
+                    <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "150ms" }} />
+                    <span className="inline-block h-1 w-1 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: "300ms" }} />
+                  </span>
+                </span>
+              );
+            })()}
+          </div>
+
           <div className="flex items-center gap-1.5 border-t border-border/40 p-2">
             <Input
               value={draft}
-              onChange={(e) => setDraft(e.target.value)}
+              onChange={(e) => {
+                setDraft(e.target.value);
+                const now = Date.now();
+                if (
+                  e.target.value.length > 0 &&
+                  channelRef.current &&
+                  userId &&
+                  nickname &&
+                  now - lastTypingSentRef.current > 2000
+                ) {
+                  lastTypingSentRef.current = now;
+                  channelRef.current.send({
+                    type: "broadcast",
+                    event: "typing",
+                    payload: { user_id: userId, nickname },
+                  });
+                }
+              }}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder="say something nice..."
               maxLength={200}
