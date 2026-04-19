@@ -30,6 +30,7 @@ export interface NoteData {
   x: number;
   y: number;
   user_id: string;
+  created_at?: string;
 }
 
 interface Props {
@@ -37,15 +38,17 @@ interface Props {
   authorNickname?: string;
   isOwner: boolean;
   isAuthed: boolean;
+  currentUserId: string | null;
+  scale: number;
+  screenToWorld: (clientX: number, clientY: number) => { x: number; y: number };
   onDragEnd: (id: string, x: number, y: number) => void;
   onUpdate: (id: string, patch: Partial<Pick<NoteData, "content" | "color">>) => void;
   onDelete: (id: string) => void;
   onReport: (id: string, reason: string) => void;
-  boardRef: React.RefObject<HTMLDivElement>;
 }
 
 const NOTE_W = 180;
-const NOTE_H = 180;
+const NOTE_H = 200;
 
 export const StickyNote = ({
   note,
