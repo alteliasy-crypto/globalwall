@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Warm background -->
+  <rect width="32" height="32" rx="6" fill="#2C1A0E"/>
+  
+  <!-- Sticky note -->
+  <rect x="8" y="9" width="16" height="15" rx="1.5" fill="#F5D98B"/>
+  <!-- Folded corner -->
+  <polygon points="20,9 24,9 24,13" fill="#E8C060"/>
+  <polygon points="20,9 24,13 20,13" fill="#D4AC45"/>
+  
+  <!-- Lines on sticky note (handwritten vibe) -->
+  <line x1="11" y1="15" x2="21" y2="15" stroke="#C4A84F" stroke-width="1" stroke-linecap="round"/>
+  <line x1="11" y1="18" x2="19" y2="18" stroke="#C4A84F" stroke-width="1" stroke-linecap="round"/>
+  
+  <!-- Globe arc (minimal) -->
+  <circle cx="16" cy="16.5" r="10" fill="none" stroke="#F5D98B" stroke-width="1.2" opacity="0.25"/>
+</svg>
