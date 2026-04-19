@@ -120,10 +120,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_users: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          nickname: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_public_users: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          nickname: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
