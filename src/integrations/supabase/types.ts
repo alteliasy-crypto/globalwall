@@ -120,24 +120,10 @@ export type Database = {
       }
     }
     Views: {
-      public_users: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          nickname: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      get_public_users: {
-        Args: never
-        Returns: {
-          created_at: string
-          id: string
-          nickname: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
