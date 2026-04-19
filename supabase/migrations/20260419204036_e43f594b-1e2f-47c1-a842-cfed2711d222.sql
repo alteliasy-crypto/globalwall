@@ -1,0 +1,4 @@
+ALTER TABLE public.note_votes REPLICA IDENTITY FULL;
+ALTER TABLE public.note_reactions REPLICA IDENTITY FULL;
+ALTER TABLE public.reports REPLICA IDENTITY FULL;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.reports;
