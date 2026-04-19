@@ -45,6 +45,17 @@ export const LiveChat = ({ userId, nickname }: Props) => {
       const m = payload as ChatMsg;
       setMessages((prev) => [...prev, m]);
       setUnread((u) => (open ? 0 : u + 1));
+      setTypingUsers((prev) => {
+        const next = { ...prev };
+        delete next[m.user_id];
+        return next;
+      });
+    });
+
+    ch.on("broadcast", { event: "typing" }, ({ payload }) => {
+      const { user_id, nickname: nn } = payload as { user_id: string; nickname: string };
+      if (user_id === userId) return;
+      setTypingUsers((prev) => ({ ...prev, [user_id]: { nickname: nn, ts: Date.now() } }));
     });
 
     ch.on("presence", { event: "sync" }, () => {
