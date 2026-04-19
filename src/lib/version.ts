@@ -1,13 +1,22 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v2.0.0";
+export const APP_VERSION = "v2.0.1";
 
 // Set to true when a release is in progress; user can't toggle.
 // Update the message + ETA before flipping it on.
-export const MAINTENANCE_MODE = false;
-export const MAINTENANCE_ETA = "~10 minutes";
+export const MAINTENANCE_MODE = true;
+export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v2.0.1",
+    date: "2026-04-19",
+    notes: [
+      "🐛 Fixed: emoji reaction picker (+) button is now always visible",
+      "🐛 Fixed: reporting a note you'd already reported now shows a friendly message instead of failing",
+      "😅 First test of the maintenance screen!",
+    ],
+  },
   {
     version: "v2.0.0",
     date: "2026-04-19",

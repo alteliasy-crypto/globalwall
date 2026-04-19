@@ -118,8 +118,12 @@ const Index = () => {
   const reportNote = async (note_id: string, reason: string) => {
     if (!user) return;
     const { error } = await supabase.from("reports").insert({ note_id, reason, reporter_id: user.id });
-    if (error) toast.error(error.message);
-    else toast.success("Report submitted, thanks!");
+    if (error) {
+      if (error.code === "23505") toast.info("You already reported this note.");
+      else toast.error(error.message);
+    } else {
+      toast.success("Report submitted, thanks!");
+    }
   };
 
   const screenToWorld = (cx: number, cy: number) =>
