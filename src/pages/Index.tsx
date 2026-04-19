@@ -8,7 +8,7 @@ import { NoteColor } from "@/lib/noteColors";
 import { toast } from "sonner";
 
 const Index = () => {
-  const { user, profile, loading, setNickname } = useAuth();
+  const { user, profile, loading, needsCaptcha, signInWithCaptcha, setNickname } = useAuth();
   const [notes, setNotes] = useState<NoteData[]>([]);
   const [nicknames, setNicknames] = useState<Record<string, string>>({});
   const [newColor, setNewColor] = useState<NoteColor>("yellow");
@@ -159,7 +159,12 @@ const Index = () => {
         </div>
       )}
 
-      <NicknameDialog open={!loading && !!user && !profile} onSubmit={setNickname} />
+      <NicknameDialog
+        open={!loading && (needsCaptcha || (!!user && !profile))}
+        needsCaptcha={needsCaptcha}
+        onCaptchaVerified={signInWithCaptcha}
+        onSubmit={setNickname}
+      />
     </div>
   );
 };

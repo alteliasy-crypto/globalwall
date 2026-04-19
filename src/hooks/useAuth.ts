@@ -13,6 +13,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [needsCaptcha, setNeedsCaptcha] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -21,7 +22,6 @@ export function useAuth() {
       if (!mounted) return;
       setUser(session?.user ?? null);
       if (session?.user) {
-        // defer profile fetch
         setTimeout(() => loadProfile(session.user.id), 0);
       } else {
         setProfile(null);
@@ -33,19 +33,14 @@ export function useAuth() {
       if (!mounted) return;
 
       if (!session) {
-        const { data, error } = await supabase.auth.signInAnonymously();
-        if (error) {
-          console.error("Anon sign-in failed:", error);
-          setLoading(false);
-          return;
-        }
-        setUser(data.user);
-        if (data.user) await loadProfile(data.user.id);
+        // Defer anon sign-in until captcha is solved
+        setNeedsCaptcha(true);
+        setLoading(false);
       } else {
         setUser(session.user);
         await loadProfile(session.user.id);
+        setLoading(false);
       }
-      setLoading(false);
     })();
 
     return () => {
@@ -61,6 +56,17 @@ export function useAuth() {
       .eq("id", uid)
       .maybeSingle();
     setProfile(data as Profile | null);
+  }
+
+  async function signInWithCaptcha(captchaToken: string) {
+    const { data, error } = await supabase.auth.signInAnonymously({
+      options: { captchaToken },
+    });
+    if (error) return { error };
+    setUser(data.user);
+    setNeedsCaptcha(false);
+    if (data.user) await loadProfile(data.user.id);
+    return { error: null };
   }
 
   async function setNickname(nickname: string) {
@@ -84,5 +90,13 @@ export function useAuth() {
     return { error: null };
   }
 
-  return { user, profile, loading, setNickname, refreshProfile: () => user && loadProfile(user.id) };
+  return {
+    user,
+    profile,
+    loading,
+    needsCaptcha,
+    signInWithCaptcha,
+    setNickname,
+    refreshProfile: () => user && loadProfile(user.id),
+  };
 }
