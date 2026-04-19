@@ -28,8 +28,10 @@ export const LiveChat = ({ userId, nickname }: Props) => {
   const [draft, setDraft] = useState("");
   const [online, setOnline] = useState(0);
   const [unread, setUnread] = useState(0);
+  const [typingUsers, setTypingUsers] = useState<Record<string, { nickname: string; ts: number }>>({});
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastTypingSentRef = useRef<number>(0);
 
   // Setup chat channel + presence
   useEffect(() => {
@@ -62,11 +64,20 @@ export const LiveChat = ({ userId, nickname }: Props) => {
     };
   }, [userId, nickname]);
 
-  // Expire old messages every second
+  // Expire old messages + stale typing indicators every second
   useEffect(() => {
     const t = setInterval(() => {
       const now = Date.now();
       setMessages((prev) => prev.filter((m) => now - m.ts < TTL_MS));
+      setTypingUsers((prev) => {
+        const next: typeof prev = {};
+        let changed = false;
+        for (const [k, v] of Object.entries(prev)) {
+          if (now - v.ts < 4000) next[k] = v;
+          else changed = true;
+        }
+        return changed ? next : prev;
+      });
     }, 1000);
     return () => clearInterval(t);
   }, []);
