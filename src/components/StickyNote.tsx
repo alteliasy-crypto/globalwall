@@ -162,10 +162,18 @@ export const StickyNote = ({
           <p className="flex-1 overflow-hidden whitespace-pre-wrap break-words font-note text-base leading-snug text-foreground">
             {note.content}
           </p>
+          <div className="mt-1 border-t border-foreground/10 pt-1.5">
+            <NoteReactions noteId={note.id} userId={currentUserId} />
+          </div>
           <div className="flex items-end justify-between pt-1">
-            <span className="font-handwritten text-sm opacity-70">
-              — {authorNickname ?? "anon"}
-            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="font-handwritten text-sm opacity-70">
+                — {authorNickname ?? "anon"}
+              </span>
+              {dateStr && (
+                <span className="text-[10px] opacity-50">{dateStr}</span>
+              )}
+            </div>
             <div className="note-actions flex gap-0.5 opacity-0 transition-opacity" data-no-drag>
               {isOwner ? (
                 <>
