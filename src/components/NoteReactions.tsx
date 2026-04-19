@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const QUICK_EMOJIS = ["❤️", "🔥", "😂", "😮", "👏", "💯", "🥹", "🎉"];
 
@@ -66,9 +67,13 @@ export const NoteReactions = ({ noteId, userId }: Props) => {
     if (!userId) return;
     const mine = reactions.find((r) => r.user_id === userId && r.emoji === emoji);
     if (mine) {
-      await supabase.from("note_reactions").delete().eq("id", mine.id);
+      const { error } = await supabase.from("note_reactions").delete().eq("id", mine.id);
+      if (error) toast.error(error.message);
     } else {
-      await supabase.from("note_reactions").insert({ note_id: noteId, user_id: userId, emoji });
+      const { error } = await supabase
+        .from("note_reactions")
+        .insert({ note_id: noteId, user_id: userId, emoji });
+      if (error && error.code !== "23505") toast.error(error.message);
     }
   };
 
@@ -97,7 +102,8 @@ export const NoteReactions = ({ noteId, userId }: Props) => {
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="flex h-6 w-6 items-center justify-center rounded-full border border-foreground/15 bg-background/40 text-xs opacity-0 transition-opacity hover:bg-background/70 group-hover:opacity-100"
+              onPointerDown={(e) => e.stopPropagation()}
+              className="flex h-6 w-6 items-center justify-center rounded-full border border-foreground/20 bg-background/60 text-xs transition-colors hover:bg-background"
               title="Add reaction"
             >
               <Smile className="h-3 w-3" />
