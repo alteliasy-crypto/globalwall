@@ -123,7 +123,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_nicknames: {
+        Args: { ids: string[] }
+        Returns: {
+          id: string
+          nickname: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
