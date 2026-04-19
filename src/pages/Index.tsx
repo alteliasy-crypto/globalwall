@@ -35,7 +35,7 @@ const Index = () => {
     const missing = Array.from(new Set(notes.map((n) => n.user_id))).filter((id) => !(id in nicknames));
     if (missing.length === 0) return;
     (async () => {
-      const { data } = await supabase.rpc("get_nicknames", { ids: missing });
+      const { data } = await (supabase as any).rpc("get_nicknames", { ids: missing });
       if (data) {
         setNicknames((prev) => {
           const next = { ...prev };
