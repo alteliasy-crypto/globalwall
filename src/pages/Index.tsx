@@ -7,6 +7,7 @@ import { Toolbar } from "@/components/Toolbar";
 import { NoteColor } from "@/lib/noteColors";
 import { InfiniteCanvas, InfiniteCanvasHandle, ViewTransform } from "@/components/InfiniteCanvas";
 import { LiveChat } from "@/components/LiveChat";
+import { Inbox } from "@/components/Inbox";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";

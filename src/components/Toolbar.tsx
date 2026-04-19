@@ -29,10 +29,11 @@ interface Props {
   onAddNote: () => void;
   onSignOut: () => void;
   canAdd: boolean;
+  inboxSlot?: React.ReactNode;
 }
 
 export const Toolbar = ({
-  nickname, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, canAdd,
+  nickname, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, canAdd, inboxSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -53,6 +54,8 @@ export const Toolbar = ({
             <span className="text-xs text-muted-foreground">Color:</span>
             <ColorPicker value={newColor} onChange={setNewColor} size="sm" />
           </div>
+
+          {inboxSlot}
 
           <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full">
             <Plus className="h-4 w-4" />
