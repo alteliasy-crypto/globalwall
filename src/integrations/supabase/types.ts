@@ -14,18 +14,107 @@ export type Database = {
   }
   public: {
     Tables: {
-      rls: {
+      notes: {
+        Row: {
+          color: string
+          content: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          x: number
+          y: number
+        }
+        Insert: {
+          color?: string
+          content: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          x?: number
+          y?: number
+        }
+        Update: {
+          color?: string
+          content?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
         Row: {
           created_at: string
-          id: number
+          id: string
+          note_id: string
+          reason: string
+          reporter_id: string
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
+          note_id: string
+          reason: string
+          reporter_id: string
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
+          note_id?: string
+          reason?: string
+          reporter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          id: string
+          is_banned: boolean
+          nickname: string
+          warnings: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_banned?: boolean
+          nickname: string
+          warnings?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_banned?: boolean
+          nickname?: string
+          warnings?: number
         }
         Relationships: []
       }
