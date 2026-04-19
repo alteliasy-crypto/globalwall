@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Flag, Check, X, Palette } from "lucide-react";
 import { colorClass, NoteColor, rotationFor } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
+import { NoteReactions } from "./NoteReactions";
 import {
   Popover,
   PopoverContent,
@@ -51,11 +52,13 @@ export const StickyNote = ({
   authorNickname,
   isOwner,
   isAuthed,
+  currentUserId,
+  scale,
+  screenToWorld,
   onDragEnd,
   onUpdate,
   onDelete,
   onReport,
-  boardRef,
 }: Props) => {
   const [pos, setPos] = useState({ x: note.x, y: note.y });
   const [dragging, setDragging] = useState(false);
@@ -73,23 +76,17 @@ export const StickyNote = ({
   const onPointerDown = (e: React.PointerEvent) => {
     if (!isOwner || editing) return;
     if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
-    const board = boardRef.current?.getBoundingClientRect();
-    if (!board) return;
-    dragRef.current = {
-      dx: e.clientX - board.left - pos.x,
-      dy: e.clientY - board.top - pos.y,
-    };
+    e.stopPropagation(); // don't pan canvas
+    const w = screenToWorld(e.clientX, e.clientY);
+    dragRef.current = { dx: w.x - pos.x, dy: w.y - pos.y };
     setDragging(true);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging || !dragRef.current) return;
-    const board = boardRef.current?.getBoundingClientRect();
-    if (!board) return;
-    const nx = Math.max(0, Math.min(board.width - NOTE_W, e.clientX - board.left - dragRef.current.dx));
-    const ny = Math.max(0, Math.min(board.height - NOTE_H, e.clientY - board.top - dragRef.current.dy));
-    setPos({ x: nx, y: ny });
+    const w = screenToWorld(e.clientX, e.clientY);
+    setPos({ x: w.x - dragRef.current.dx, y: w.y - dragRef.current.dy });
   };
 
   const onPointerUp = () => {
@@ -107,6 +104,10 @@ export const StickyNote = ({
   };
 
   const rot = rotationFor(note.id);
+
+  const dateStr = note.created_at
+    ? new Date(note.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    : "";
 
   return (
     <div
