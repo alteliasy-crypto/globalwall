@@ -25,7 +25,7 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
   ({ children, onTransformChange }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [t, setT] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
-    const panRef = useRef<{ startX: number; startY: number; ox: number; oy: number } | null>(null);
+    const panRef = useRef<{ startX: number; startY: number; ox: number; oy: number; captured: boolean } | null>(null);
 
     useEffect(() => {
       onTransformChange?.(t);
