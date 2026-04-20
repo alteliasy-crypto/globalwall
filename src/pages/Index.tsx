@@ -193,6 +193,8 @@ const Index = () => {
         onSignOut={startOver}
         canAdd={!!profile && !profile.is_banned && myNotes.length < 3}
         inboxSlot={<Inbox userId={user?.id ?? null} />}
+        favoritesSlot={<FavoritesPanel userId={user?.id ?? null} onJumpTo={jumpToWorld} />}
+        onDeleteAllMine={deleteAllMine}
       />
 
       {/* Canvas controls */}
