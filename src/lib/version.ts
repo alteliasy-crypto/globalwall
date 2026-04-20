@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v2.1.1";
+export const APP_VERSION = "v2.2.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,18 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v2.2.0",
+    date: "2026-04-20",
+    notes: [
+      "🐛 Fixed: emoji + reaction buttons now actually open (canvas was stealing pointer events from popovers)",
+      "🐛 Fixed: report submission now works (was failing due to a duplicate database trigger)",
+      "🛡️ Server-side profanity filter — bad notes are now rejected at the database, not just the client",
+      "⭐ New: favorite any note with the star button, view all your saved notes from the toolbar",
+      "🎮 Maintenance screen now has a bubble-pop mini-game while you wait",
+      "📌 Drag is now smarter — short clicks no longer get treated as drags, so popovers/dialogs work cleanly",
+    ],
+  },
   {
     version: "v2.1.1",
     date: "2026-04-19",

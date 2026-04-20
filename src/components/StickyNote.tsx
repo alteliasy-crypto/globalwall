@@ -7,6 +7,7 @@ import { colorClass, NoteColor, rotationFor } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
 import { NoteReactions } from "./NoteReactions";
 import { NoteVotes } from "./NoteVotes";
+import { NoteFavorite } from "./NoteFavorite";
 import {
   Popover,
   PopoverContent,
@@ -173,8 +174,9 @@ export const StickyNote = ({
           <p className="flex-1 overflow-hidden whitespace-pre-wrap break-words font-note text-base leading-snug text-foreground">
             {note.content}
           </p>
-          <div className="mt-1 flex items-center justify-between gap-1 border-t border-foreground/10 pt-1.5">
+          <div class-x="" className="mt-1 flex items-center justify-between gap-1 border-t border-foreground/10 pt-1.5">
             <NoteVotes noteId={note.id} userId={currentUserId} isOwner={isOwner} />
+            <NoteFavorite noteId={note.id} userId={currentUserId} />
           </div>
           <div className="pt-1">
             <NoteReactions noteId={note.id} userId={currentUserId} />
