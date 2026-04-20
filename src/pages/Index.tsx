@@ -145,21 +145,8 @@ const Index = () => {
   };
 
   const jumpToWorld = (wx: number, wy: number) => {
-    // Center the viewport on the world coordinate
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
-    const t = canvasRef.current?.getTransform();
-    if (!t) return;
-    const newScale = t.scale;
-    canvasRef.current && (canvasRef.current as any);
-    // We don't have a setTransform; instead, compute by recentering then panning manually via zoomBy+screenToWorld trick.
-    // Simpler approach: use the imperative handle if available — fall back to recenter.
-    if ((canvasRef.current as any)?.panTo) {
-      (canvasRef.current as any).panTo(wx, wy);
-    } else {
-      canvasRef.current?.recenter();
-      // After recenter, schedule a pan via a tiny imperative setTransform fallback would need API change.
-    }
+    // Offset by half the note size so the note ends up roughly centered
+    canvasRef.current?.panTo(wx + 90, wy + 100);
   };
 
   const screenToWorld = (cx: number, cy: number) =>

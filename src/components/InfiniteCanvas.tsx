@@ -10,6 +10,7 @@ export interface InfiniteCanvasHandle {
   screenToWorld: (clientX: number, clientY: number) => { x: number; y: number };
   recenter: () => void;
   zoomBy: (factor: number) => void;
+  panTo: (worldX: number, worldY: number) => void;
   getTransform: () => ViewTransform;
 }
 
@@ -49,6 +50,12 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
         const cx = rect.width / 2;
         const cy = rect.height / 2;
         setT({ scale: newScale, x: cx - (cx - t.x) * f, y: cy - (cy - t.y) * f });
+      },
+      panTo: (wx, wy) => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        // Center the world coord (wx,wy) in the viewport, keep current scale.
+        setT((prev) => ({ scale: prev.scale, x: rect.width / 2 - wx * prev.scale, y: rect.height / 2 - wy * prev.scale }));
       },
       getTransform: () => t,
     }));
