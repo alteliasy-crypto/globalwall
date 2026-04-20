@@ -7,6 +7,7 @@ import { colorClass, NoteColor, rotationFor } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
 import { NoteReactions } from "./NoteReactions";
 import { NoteVotes } from "./NoteVotes";
+import { NoteFavorite } from "./NoteFavorite";
 import {
   Popover,
   PopoverContent,
@@ -69,7 +70,7 @@ export const StickyNote = ({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(note.content);
   const [reportReason, setReportReason] = useState("");
-  const dragRef = useRef<{ dx: number; dy: number } | null>(null);
+  const dragRef = useRef<{ dx: number; dy: number; startX: number; startY: number; captured: boolean } | null>(null);
 
   useEffect(() => {
     if (!dragging) setPos({ x: note.x, y: note.y });
@@ -82,21 +83,30 @@ export const StickyNote = ({
     if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
     e.stopPropagation(); // don't pan canvas
     const w = screenToWorld(e.clientX, e.clientY);
-    dragRef.current = { dx: w.x - pos.x, dy: w.y - pos.y };
-    setDragging(true);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    dragRef.current = { dx: w.x - pos.x, dy: w.y - pos.y, startX: e.clientX, startY: e.clientY, captured: false };
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragging || !dragRef.current) return;
+    const d = dragRef.current;
+    if (!d) return;
+    if (!d.captured) {
+      if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < 4) return;
+      d.captured = true;
+      setDragging(true);
+      try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch {}
+    }
     const w = screenToWorld(e.clientX, e.clientY);
-    setPos({ x: w.x - dragRef.current.dx, y: w.y - dragRef.current.dy });
+    setPos({ x: w.x - d.dx, y: w.y - d.dy });
   };
 
-  const onPointerUp = () => {
-    if (!dragging) return;
-    setDragging(false);
-    onDragEnd(note.id, pos.x, pos.y);
+  const onPointerUp = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    if (d.captured) {
+      try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+      setDragging(false);
+      onDragEnd(note.id, pos.x, pos.y);
+    }
     dragRef.current = null;
   };
 
@@ -166,6 +176,7 @@ export const StickyNote = ({
           </p>
           <div className="mt-1 flex items-center justify-between gap-1 border-t border-foreground/10 pt-1.5">
             <NoteVotes noteId={note.id} userId={currentUserId} isOwner={isOwner} />
+            <NoteFavorite noteId={note.id} userId={currentUserId} />
           </div>
           <div className="pt-1">
             <NoteReactions noteId={note.id} userId={currentUserId} />

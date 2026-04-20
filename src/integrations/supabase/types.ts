@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      note_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          note_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       note_reactions: {
         Row: {
           created_at: string

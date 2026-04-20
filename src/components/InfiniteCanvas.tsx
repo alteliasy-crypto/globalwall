@@ -10,6 +10,7 @@ export interface InfiniteCanvasHandle {
   screenToWorld: (clientX: number, clientY: number) => { x: number; y: number };
   recenter: () => void;
   zoomBy: (factor: number) => void;
+  panTo: (worldX: number, worldY: number) => void;
   getTransform: () => ViewTransform;
 }
 
@@ -25,7 +26,7 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
   ({ children, onTransformChange }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [t, setT] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
-    const panRef = useRef<{ startX: number; startY: number; ox: number; oy: number } | null>(null);
+    const panRef = useRef<{ startX: number; startY: number; ox: number; oy: number; captured: boolean } | null>(null);
 
     useEffect(() => {
       onTransformChange?.(t);
@@ -50,6 +51,12 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
         const cy = rect.height / 2;
         setT({ scale: newScale, x: cx - (cx - t.x) * f, y: cy - (cy - t.y) * f });
       },
+      panTo: (wx, wy) => {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        // Center the world coord (wx,wy) in the viewport, keep current scale.
+        setT((prev) => ({ scale: prev.scale, x: rect.width / 2 - wx * prev.scale, y: rect.height / 2 - wy * prev.scale }));
+      },
       getTransform: () => t,
     }));
 
@@ -71,24 +78,35 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
     };
 
     const onPointerDown = (e: React.PointerEvent) => {
-      // Only pan when starting on the canvas background (not a note)
-      if ((e.target as HTMLElement).closest("[data-note]")) return;
+      // Only pan when starting on the canvas background (not a note, popover, dialog, etc.)
+      const target = e.target as HTMLElement;
+      if (target.closest("[data-note]")) return;
+      if (target.closest("[data-radix-popper-content-wrapper]")) return;
+      if (target.closest("[role='dialog']")) return;
       if (e.button !== 0 && e.button !== 1) return;
-      panRef.current = { startX: e.clientX, startY: e.clientY, ox: t.x, oy: t.y };
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      panRef.current = { startX: e.clientX, startY: e.clientY, ox: t.x, oy: t.y, captured: false };
     };
 
     const onPointerMove = (e: React.PointerEvent) => {
       const pan = panRef.current;
       if (!pan) return;
-      setT((prev) => ({
-        ...prev,
-        x: pan.ox + (e.clientX - pan.startX),
-        y: pan.oy + (e.clientY - pan.startY),
-      }));
+      const dx = e.clientX - pan.startX;
+      const dy = e.clientY - pan.startY;
+      // Only start capturing the pointer once movement exceeds a small threshold,
+      // so plain clicks on portaled UI (popovers, dialogs) still work.
+      if (!pan.captured && Math.hypot(dx, dy) < 4) return;
+      if (!pan.captured) {
+        pan.captured = true;
+        try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch {}
+      }
+      setT((prev) => ({ ...prev, x: pan.ox + dx, y: pan.oy + dy }));
     };
 
-    const onPointerUp = () => {
+    const onPointerUp = (e: React.PointerEvent) => {
+      const pan = panRef.current;
+      if (pan?.captured) {
+        try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+      }
       panRef.current = null;
     };
 

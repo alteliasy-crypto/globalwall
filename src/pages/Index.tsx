@@ -8,6 +8,7 @@ import { NoteColor } from "@/lib/noteColors";
 import { InfiniteCanvas, InfiniteCanvasHandle, ViewTransform } from "@/components/InfiniteCanvas";
 import { LiveChat } from "@/components/LiveChat";
 import { Inbox } from "@/components/Inbox";
+import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";
@@ -105,7 +106,13 @@ const Index = () => {
     }
     setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, ...patch } : n)));
     const { error } = await supabase.from("notes").update(patch).eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) {
+      if (error.message?.toLowerCase().includes("disallowed")) {
+        toast.error("That wording isn't allowed — note not saved.");
+      } else {
+        toast.error(error.message);
+      }
+    }
   };
 
   const onDragEnd = (id: string, x: number, y: number) => updateNote(id, { x, y });
@@ -125,6 +132,21 @@ const Index = () => {
     } else {
       toast.success("Report submitted, thanks!");
     }
+  };
+
+  const deleteAllMine = async () => {
+    if (!user) return;
+    const ids = myNotes.map((n) => n.id);
+    if (ids.length === 0) return;
+    setNotes((prev) => prev.filter((n) => n.user_id !== user.id));
+    const { error } = await supabase.from("notes").delete().eq("user_id", user.id);
+    if (error) toast.error(error.message);
+    else toast.success(`Deleted ${ids.length} note${ids.length === 1 ? "" : "s"}.`);
+  };
+
+  const jumpToWorld = (wx: number, wy: number) => {
+    // Offset by half the note size so the note ends up roughly centered
+    canvasRef.current?.panTo(wx + 90, wy + 100);
   };
 
   const screenToWorld = (cx: number, cy: number) =>
@@ -171,6 +193,8 @@ const Index = () => {
         onSignOut={startOver}
         canAdd={!!profile && !profile.is_banned && myNotes.length < 3}
         inboxSlot={<Inbox userId={user?.id ?? null} />}
+        favoritesSlot={<FavoritesPanel userId={user?.id ?? null} onJumpTo={jumpToWorld} />}
+        onDeleteAllMine={deleteAllMine}
       />
 
       {/* Canvas controls */}
