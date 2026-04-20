@@ -105,7 +105,13 @@ const Index = () => {
     }
     setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, ...patch } : n)));
     const { error } = await supabase.from("notes").update(patch).eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) {
+      if (error.message?.toLowerCase().includes("disallowed")) {
+        toast.error("That wording isn't allowed — note not saved.");
+      } else {
+        toast.error(error.message);
+      }
+    }
   };
 
   const onDragEnd = (id: string, x: number, y: number) => updateNote(id, { x, y });
