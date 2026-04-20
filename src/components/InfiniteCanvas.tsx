@@ -71,24 +71,35 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasHandle, Props>(
     };
 
     const onPointerDown = (e: React.PointerEvent) => {
-      // Only pan when starting on the canvas background (not a note)
-      if ((e.target as HTMLElement).closest("[data-note]")) return;
+      // Only pan when starting on the canvas background (not a note, popover, dialog, etc.)
+      const target = e.target as HTMLElement;
+      if (target.closest("[data-note]")) return;
+      if (target.closest("[data-radix-popper-content-wrapper]")) return;
+      if (target.closest("[role='dialog']")) return;
       if (e.button !== 0 && e.button !== 1) return;
-      panRef.current = { startX: e.clientX, startY: e.clientY, ox: t.x, oy: t.y };
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      panRef.current = { startX: e.clientX, startY: e.clientY, ox: t.x, oy: t.y, captured: false };
     };
 
     const onPointerMove = (e: React.PointerEvent) => {
       const pan = panRef.current;
       if (!pan) return;
-      setT((prev) => ({
-        ...prev,
-        x: pan.ox + (e.clientX - pan.startX),
-        y: pan.oy + (e.clientY - pan.startY),
-      }));
+      const dx = e.clientX - pan.startX;
+      const dy = e.clientY - pan.startY;
+      // Only start capturing the pointer once movement exceeds a small threshold,
+      // so plain clicks on portaled UI (popovers, dialogs) still work.
+      if (!pan.captured && Math.hypot(dx, dy) < 4) return;
+      if (!pan.captured) {
+        pan.captured = true;
+        try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch {}
+      }
+      setT((prev) => ({ ...prev, x: pan.ox + dx, y: pan.oy + dy }));
     };
 
-    const onPointerUp = () => {
+    const onPointerUp = (e: React.PointerEvent) => {
+      const pan = panRef.current;
+      if (pan?.captured) {
+        try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+      }
       panRef.current = null;
     };
 
