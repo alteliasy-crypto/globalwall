@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "./ColorPicker";
 import { NoteColor } from "@/lib/noteColors";
-import { Plus, LogOut, Sparkles, HelpCircle, FileText } from "lucide-react";
+import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2 } from "lucide-react";
 import { APP_VERSION, DEV_NOTES } from "@/lib/version";
 import {
   DropdownMenu,
@@ -28,12 +28,14 @@ interface Props {
   setNewColor: (c: NoteColor) => void;
   onAddNote: () => void;
   onSignOut: () => void;
+  onDeleteAllMine: () => void;
   canAdd: boolean;
   inboxSlot?: React.ReactNode;
+  favoritesSlot?: React.ReactNode;
 }
 
 export const Toolbar = ({
-  nickname, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, canAdd, inboxSlot,
+  nickname, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -55,6 +57,7 @@ export const Toolbar = ({
             <ColorPicker value={newColor} onChange={setNewColor} size="sm" />
           </div>
 
+          {favoritesSlot}
           {inboxSlot}
 
           <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full">
@@ -123,6 +126,11 @@ export const Toolbar = ({
                   </div>
                 </DialogContent>
               </Dialog>
+              {myCount > 0 && (
+                <DropdownMenuItem onClick={onDeleteAllMine} className="text-destructive">
+                  <Trash2 className="mr-2 h-4 w-4" /> Delete all my notes
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={onSignOut} className="text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Start over
               </DropdownMenuItem>

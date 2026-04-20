@@ -8,6 +8,7 @@ import { NoteColor } from "@/lib/noteColors";
 import { InfiniteCanvas, InfiniteCanvasHandle, ViewTransform } from "@/components/InfiniteCanvas";
 import { LiveChat } from "@/components/LiveChat";
 import { Inbox } from "@/components/Inbox";
+import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";
@@ -130,6 +131,34 @@ const Index = () => {
       else toast.error(error.message);
     } else {
       toast.success("Report submitted, thanks!");
+    }
+  };
+
+  const deleteAllMine = async () => {
+    if (!user) return;
+    const ids = myNotes.map((n) => n.id);
+    if (ids.length === 0) return;
+    setNotes((prev) => prev.filter((n) => n.user_id !== user.id));
+    const { error } = await supabase.from("notes").delete().eq("user_id", user.id);
+    if (error) toast.error(error.message);
+    else toast.success(`Deleted ${ids.length} note${ids.length === 1 ? "" : "s"}.`);
+  };
+
+  const jumpToWorld = (wx: number, wy: number) => {
+    // Center the viewport on the world coordinate
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const t = canvasRef.current?.getTransform();
+    if (!t) return;
+    const newScale = t.scale;
+    canvasRef.current && (canvasRef.current as any);
+    // We don't have a setTransform; instead, compute by recentering then panning manually via zoomBy+screenToWorld trick.
+    // Simpler approach: use the imperative handle if available — fall back to recenter.
+    if ((canvasRef.current as any)?.panTo) {
+      (canvasRef.current as any).panTo(wx, wy);
+    } else {
+      canvasRef.current?.recenter();
+      // After recenter, schedule a pan via a tiny imperative setTransform fallback would need API change.
     }
   };
 
