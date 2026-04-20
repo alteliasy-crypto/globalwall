@@ -174,7 +174,7 @@ export const StickyNote = ({
           <p className="flex-1 overflow-hidden whitespace-pre-wrap break-words font-note text-base leading-snug text-foreground">
             {note.content}
           </p>
-          <div class-x="" className="mt-1 flex items-center justify-between gap-1 border-t border-foreground/10 pt-1.5">
+          <div className="mt-1 flex items-center justify-between gap-1 border-t border-foreground/10 pt-1.5">
             <NoteVotes noteId={note.id} userId={currentUserId} isOwner={isOwner} />
             <NoteFavorite noteId={note.id} userId={currentUserId} />
           </div>
