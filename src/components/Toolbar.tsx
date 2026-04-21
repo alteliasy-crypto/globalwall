@@ -22,13 +22,16 @@ import {
 } from "@/components/ui/dialog";
 
 interface Props {
+  userId: string | null;
   nickname: string | null;
+  avatarKey: string | null;
   myCount: number;
   totalCount: number;
   newColor: NoteColor;
   setNewColor: (c: NoteColor) => void;
   onAddNote: () => void;
   onSignOut: () => void;
+  onEditProfile: () => void;
   onDeleteAllMine: () => void;
   canAdd: boolean;
   inboxSlot?: React.ReactNode;
@@ -36,7 +39,7 @@ interface Props {
 }
 
 export const Toolbar = ({
-  nickname, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot,
+  userId, nickname, avatarKey, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
