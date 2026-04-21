@@ -27,6 +27,7 @@ interface Props {
   nickname: string | null;
   avatarKey: string | null;
   myCount: number;
+  noteCap: number;
   totalCount: number;
   newColor: NoteColor;
   setNewColor: (c: NoteColor) => void;
@@ -37,10 +38,11 @@ interface Props {
   canAdd: boolean;
   inboxSlot?: React.ReactNode;
   favoritesSlot?: React.ReactNode;
+  dailySlot?: React.ReactNode;
 }
 
 export const Toolbar = ({
-  userId, nickname, avatarKey, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot,
+  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -63,12 +65,13 @@ export const Toolbar = ({
           </div>
 
           {favoritesSlot}
+          {dailySlot}
           {inboxSlot}
 
           <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full">
             <Plus className="h-4 w-4" />
             <span className="font-handwritten text-base">Add note</span>
-            <span className="ml-1 rounded-full bg-primary-foreground/20 px-1.5 text-xs">{myCount}/3</span>
+            <span className="ml-1 rounded-full bg-primary-foreground/20 px-1.5 text-xs">{myCount}/{noteCap}</span>
           </Button>
 
           <DropdownMenu>

@@ -9,9 +9,11 @@ import { InfiniteCanvas, InfiniteCanvasHandle, ViewTransform } from "@/component
 import { LiveChat } from "@/components/LiveChat";
 import { Inbox } from "@/components/Inbox";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
+import { DailyTaskPanel } from "@/components/DailyTaskPanel";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { useProgress } from "@/hooks/useProgress";
 import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ import { toast } from "sonner";
 const Index = () => {
   const { user, profile, loading, needsCaptcha, signInWithCaptcha, setNickname, startOver } = useAuth();
   const myExtras = useMyProfile(user?.id ?? null);
+  const { progress } = useProgress(user?.id ?? null);
   const [editOpen, setEditOpen] = useState(false);
   const [notes, setNotes] = useState<NoteData[]>([]);
   const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
@@ -85,11 +88,12 @@ const Index = () => {
   }, [user]);
 
   const myNotes = useMemo(() => notes.filter((n) => n.user_id === user?.id), [notes, user]);
+  const noteCap = 3 + (progress?.bonus_note_slots ?? 0);
 
   const addNote = async () => {
     if (!user || !profile) return;
-    if (myNotes.length >= 3) {
-      toast.error("You've reached 3 notes — delete one first!");
+    if (myNotes.length >= noteCap) {
+      toast.error(`You've reached ${noteCap} notes — delete one or complete a daily task!`);
       return;
     }
     // Drop the new note near the center of the current viewport (in world coords)
@@ -197,15 +201,17 @@ const Index = () => {
         nickname={profile?.nickname ?? null}
         avatarKey={myExtras.avatar_key}
         myCount={myNotes.length}
+        noteCap={noteCap}
         totalCount={notes.length}
         newColor={newColor}
         setNewColor={setNewColor}
         onAddNote={addNote}
         onSignOut={startOver}
         onEditProfile={() => setEditOpen(true)}
-        canAdd={!!profile && !profile.is_banned && myNotes.length < 3}
+        canAdd={!!profile && !profile.is_banned && myNotes.length < noteCap}
         inboxSlot={<Inbox userId={user?.id ?? null} />}
         favoritesSlot={<FavoritesPanel userId={user?.id ?? null} onJumpTo={jumpToWorld} />}
+        dailySlot={<DailyTaskPanel userId={user?.id ?? null} />}
         onDeleteAllMine={deleteAllMine}
       />
 
