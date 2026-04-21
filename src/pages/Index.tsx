@@ -10,6 +10,8 @@ import { LiveChat } from "@/components/LiveChat";
 import { Inbox } from "@/components/Inbox";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
+import { EditProfileDialog } from "@/components/EditProfileDialog";
+import { useMyProfile } from "@/hooks/useMyProfile";
 import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";
 import { Button } from "@/components/ui/button";
@@ -18,8 +20,10 @@ import { toast } from "sonner";
 
 const Index = () => {
   const { user, profile, loading, needsCaptcha, signInWithCaptcha, setNickname, startOver } = useAuth();
+  const myExtras = useMyProfile(user?.id ?? null);
+  const [editOpen, setEditOpen] = useState(false);
   const [notes, setNotes] = useState<NoteData[]>([]);
-  const [nicknames, setNicknames] = useState<Record<string, string>>({});
+  const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
   const [newColor, setNewColor] = useState<NoteColor>("yellow");
   const [transform, setTransform] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
   const canvasRef = useRef<InfiniteCanvasHandle>(null);
@@ -40,21 +44,25 @@ const Index = () => {
     })();
   }, [user]);
 
-  // Resolve nicknames for visible notes
+  // Resolve nicknames + avatars for visible notes
   useEffect(() => {
-    const missing = Array.from(new Set(notes.map((n) => n.user_id))).filter((id) => !(id in nicknames));
+    const missing = Array.from(new Set(notes.map((n) => n.user_id))).filter((id) => !(id in authorMeta));
     if (missing.length === 0) return;
     (async () => {
-      const { data } = await (supabase as any).rpc("get_nicknames", { ids: missing });
-      if (data) {
-        setNicknames((prev) => {
-          const next = { ...prev };
-          for (const row of data as { id: string; nickname: string }[]) next[row.id] = row.nickname;
-          return next;
-        });
-      }
+      const [{ data: nicks }, { data: profs }] = await Promise.all([
+        (supabase as any).rpc("get_nicknames", { ids: missing }),
+        supabase.from("user_profiles").select("user_id, avatar_key").in("user_id", missing),
+      ]);
+      const profMap = new Map((profs ?? []).map((p: any) => [p.user_id, p.avatar_key]));
+      setAuthorMeta((prev) => {
+        const next = { ...prev };
+        for (const row of (nicks ?? []) as { id: string; nickname: string }[]) {
+          next[row.id] = { nickname: row.nickname, avatar_key: (profMap.get(row.id) as string) ?? "sparkle" };
+        }
+        return next;
+      });
     })();
-  }, [notes, nicknames]);
+  }, [notes, authorMeta]);
 
   // Realtime
   useEffect(() => {
@@ -161,7 +169,8 @@ const Index = () => {
           <StickyNote
             key={n.id}
             note={n}
-            authorNickname={nicknames[n.user_id]}
+            authorNickname={authorMeta[n.user_id]?.nickname}
+            authorAvatarKey={authorMeta[n.user_id]?.avatar_key}
             isOwner={user?.id === n.user_id}
             isAuthed={!!user}
             currentUserId={user?.id ?? null}
@@ -184,18 +193,33 @@ const Index = () => {
       )}
 
       <Toolbar
+        userId={user?.id ?? null}
         nickname={profile?.nickname ?? null}
+        avatarKey={myExtras.avatar_key}
         myCount={myNotes.length}
         totalCount={notes.length}
         newColor={newColor}
         setNewColor={setNewColor}
         onAddNote={addNote}
         onSignOut={startOver}
+        onEditProfile={() => setEditOpen(true)}
         canAdd={!!profile && !profile.is_banned && myNotes.length < 3}
         inboxSlot={<Inbox userId={user?.id ?? null} />}
         favoritesSlot={<FavoritesPanel userId={user?.id ?? null} onJumpTo={jumpToWorld} />}
         onDeleteAllMine={deleteAllMine}
       />
+
+      {profile && (
+        <EditProfileDialog
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          initialNickname={profile.nickname}
+          initialBio={myExtras.bio}
+          initialAvatarKey={myExtras.avatar_key}
+          onSaveNickname={setNickname}
+          onSaveExtras={myExtras.save}
+        />
+      )}
 
       {/* Canvas controls */}
       <div className="pointer-events-auto absolute bottom-4 left-4 z-30 flex flex-col gap-1.5 rounded-2xl border border-border/40 bg-background/80 p-1.5 shadow-lg backdrop-blur-md">

@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      follows: {
+        Row: {
+          created_at: string
+          followed_id: string
+          follower_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          followed_id: string
+          follower_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          followed_id?: string
+          follower_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      inbox_notifications: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          note_id: string | null
+          payload: Json
+          read_at: string | null
+          recipient_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          note_id?: string | null
+          payload?: Json
+          read_at?: string | null
+          recipient_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          note_id?: string | null
+          payload?: Json
+          read_at?: string | null
+          recipient_id?: string
+        }
+        Relationships: []
+      }
       note_favorites: {
         Row: {
           created_at: string
@@ -179,6 +233,30 @@ export type Database = {
           },
         ]
       }
+      user_profiles: {
+        Row: {
+          avatar_key: string
+          bio: string
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_key?: string
+          bio?: string
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_key?: string
+          bio?: string
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string
@@ -213,6 +291,22 @@ export type Database = {
         Returns: {
           id: string
           nickname: string
+        }[]
+      }
+      get_public_profile: {
+        Args: { target_id: string }
+        Returns: {
+          avatar_key: string
+          bio: string
+          follower_count: number
+          following_count: number
+          is_banned: boolean
+          joined_at: string
+          nickname: string
+          notes_count: number
+          reports_made: number
+          user_id: string
+          warnings: number
         }[]
       }
     }

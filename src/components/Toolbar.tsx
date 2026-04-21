@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "./ColorPicker";
 import { NoteColor } from "@/lib/noteColors";
-import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2 } from "lucide-react";
+import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { APP_VERSION, DEV_NOTES } from "@/lib/version";
 import {
   DropdownMenu,
@@ -19,15 +20,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Avatar } from "./Avatar";
 
 interface Props {
+  userId: string | null;
   nickname: string | null;
+  avatarKey: string | null;
   myCount: number;
   totalCount: number;
   newColor: NoteColor;
   setNewColor: (c: NoteColor) => void;
   onAddNote: () => void;
   onSignOut: () => void;
+  onEditProfile: () => void;
   onDeleteAllMine: () => void;
   canAdd: boolean;
   inboxSlot?: React.ReactNode;
@@ -35,7 +40,7 @@ interface Props {
 }
 
 export const Toolbar = ({
-  nickname, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot,
+  userId, nickname, avatarKey, myCount, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -68,7 +73,8 @@ export const Toolbar = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="rounded-full">
+              <Button variant="outline" size="sm" className="gap-1.5 rounded-full pl-1 pr-3">
+                <Avatar avatarKey={avatarKey} size="sm" />
                 <span className="font-handwritten text-base">{nickname ?? "..."}</span>
               </Button>
             </DropdownMenuTrigger>
@@ -76,6 +82,17 @@ export const Toolbar = ({
               <DropdownMenuLabel className="font-handwritten text-base">
                 Hi, {nickname ?? "friend"}!
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {userId && (
+                <Link to={`/u/${userId}`}>
+                  <DropdownMenuItem>
+                    <UserIcon className="mr-2 h-4 w-4" /> My profile
+                  </DropdownMenuItem>
+                </Link>
+              )}
+              <DropdownMenuItem onClick={onEditProfile}>
+                <UserIcon className="mr-2 h-4 w-4" /> Edit profile
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <Dialog>
                 <DialogTrigger asChild>

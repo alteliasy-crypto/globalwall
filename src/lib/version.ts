@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v2.2.0";
+export const APP_VERSION = "v3.0.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,18 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v3.0.0",
+    date: "2026-04-20",
+    notes: [
+      "👤 New user profiles! Click any nickname to view someone's profile, bio, notes, followers, and warning/report stats",
+      "🎨 12 preset avatars — pick yours from your profile menu",
+      "✍️ Editable bios (200 chars) and changeable nicknames from the new Edit Profile dialog",
+      "➕ Follow / unfollow other wall-goers, with follower & following counts",
+      "🔒 Security: report submissions are no longer broadcast to all users — they now arrive as private inbox notifications only the note's owner can see",
+      "🔒 Security: removed an overly broad realtime channel policy",
+    ],
+  },
   {
     version: "v2.2.0",
     date: "2026-04-20",

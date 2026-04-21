@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { Bell, ThumbsUp, ThumbsDown, Smile, Flag, Inbox as InboxIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Avatar } from "./Avatar";
 
 type ActivityKind = "like" | "dislike" | "reaction" | "report";
 
@@ -16,7 +18,7 @@ interface ActivityItem {
   kind: ActivityKind;
   noteId: string;
   notePreview: string;
-  actorId: string | null; // hidden for reports (privacy)
+  actorId: string | null; // null for reports (privacy)
   emoji?: string;
   ts: number;
   read: boolean;
@@ -31,27 +33,23 @@ const STORAGE_KEY = "wall:inbox:lastSeen";
 export const Inbox = ({ userId }: Props) => {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<ActivityItem[]>([]);
-  const [nicknames, setNicknames] = useState<Record<string, string>>({});
+  const [actorMeta, setActorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
   const myNoteIdsRef = useRef<Set<string>>(new Set());
   const myNotePreviewRef = useRef<Record<string, string>>({});
   const lastSeenRef = useRef<number>(Number(localStorage.getItem(STORAGE_KEY) ?? 0));
 
-  // Track which notes are mine so we can filter activity
+  // Track which notes are mine
   useEffect(() => {
     if (!userId) return;
     let mounted = true;
     const loadMyNotes = async () => {
-      const { data } = await supabase
-        .from("notes")
-        .select("id, content")
-        .eq("user_id", userId);
+      const { data } = await supabase.from("notes").select("id, content").eq("user_id", userId);
       if (!mounted || !data) return;
       myNoteIdsRef.current = new Set(data.map((n) => n.id));
       myNotePreviewRef.current = Object.fromEntries(data.map((n) => [n.id, n.content]));
     };
     loadMyNotes();
 
-    // Subscribe to my notes changes (so new notes are tracked)
     const noteCh = supabase
       .channel(`inbox-notes:${userId}`)
       .on(
@@ -77,20 +75,30 @@ export const Inbox = ({ userId }: Props) => {
     };
   }, [userId]);
 
-  // Load recent activity on my notes (last 50)
+  // Load recent activity
   useEffect(() => {
     if (!userId) return;
     let mounted = true;
     (async () => {
       const { data: myNotes } = await supabase.from("notes").select("id, content").eq("user_id", userId);
-      if (!mounted || !myNotes || myNotes.length === 0) return;
-      const ids = myNotes.map((n) => n.id);
-      const previews = Object.fromEntries(myNotes.map((n) => [n.id, n.content]));
+      const ids = (myNotes ?? []).map((n) => n.id);
+      const previews = Object.fromEntries((myNotes ?? []).map((n) => [n.id, n.content]));
 
-      const [votesRes, reactionsRes, reportsRes] = await Promise.all([
-        supabase.from("note_votes").select("*").in("note_id", ids).order("created_at", { ascending: false }).limit(30),
-        supabase.from("note_reactions").select("*").in("note_id", ids).order("created_at", { ascending: false }).limit(30),
-        supabase.from("reports").select("id, note_id, created_at").in("note_id", ids).order("created_at", { ascending: false }).limit(20),
+      // Load votes & reactions on my notes (likes/dislikes/reactions are public)
+      const [votesRes, reactionsRes, notifRes] = await Promise.all([
+        ids.length > 0
+          ? supabase.from("note_votes").select("*").in("note_id", ids).order("created_at", { ascending: false }).limit(30)
+          : Promise.resolve({ data: [] as any[] }),
+        ids.length > 0
+          ? supabase.from("note_reactions").select("*").in("note_id", ids).order("created_at", { ascending: false }).limit(30)
+          : Promise.resolve({ data: [] as any[] }),
+        // Private inbox notifications (currently used for reports)
+        supabase
+          .from("inbox_notifications")
+          .select("id, kind, note_id, actor_id, created_at")
+          .eq("recipient_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(30),
       ]);
 
       if (!mounted) return;
@@ -121,70 +129,48 @@ export const Inbox = ({ userId }: Props) => {
           read: new Date(r.created_at).getTime() <= lastSeenRef.current,
         });
       }
-      for (const rep of (reportsRes.data ?? []) as any[]) {
+      for (const n of (notifRes.data ?? []) as any[]) {
+        if (n.kind !== "report") continue;
         initial.push({
-          id: `rep-${rep.id}`,
+          id: `n-${n.id}`,
           kind: "report",
-          noteId: rep.note_id,
-          notePreview: previews[rep.note_id] ?? "",
+          noteId: n.note_id,
+          notePreview: previews[n.note_id] ?? "",
           actorId: null,
-          ts: new Date(rep.created_at).getTime(),
-          read: new Date(rep.created_at).getTime() <= lastSeenRef.current,
+          ts: new Date(n.created_at).getTime(),
+          read: new Date(n.created_at).getTime() <= lastSeenRef.current,
         });
       }
       initial.sort((a, b) => b.ts - a.ts);
       setItems(initial.slice(0, 50));
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [userId]);
 
-  // Realtime subscriptions for new activity on ANY of my notes
+  // Realtime
   useEffect(() => {
     if (!userId) return;
     const handle = (kind: "vote" | "reaction" | "report", payload: any) => {
       const row = payload.new;
-      if (!row || !myNoteIdsRef.current.has(row.note_id)) return;
-      if ((kind === "vote" || kind === "reaction") && row.user_id === userId) return; // ignore self
+      if (!row) return;
+      // For votes/reactions, gate on my note ids (RLS allows anyone to see them, but we filter)
+      if ((kind === "vote" || kind === "reaction") && (!myNoteIdsRef.current.has(row.note_id) || row.user_id === userId)) return;
+      // For report notifications, RLS already restricts to recipient_id = me
+      if (kind === "report" && row.kind !== "report") return;
 
-      const preview = myNotePreviewRef.current[row.note_id] ?? "";
+      const noteId = row.note_id;
+      const preview = myNotePreviewRef.current[noteId] ?? "";
       const ts = new Date(row.created_at).getTime();
 
       let item: ActivityItem | null = null;
       if (kind === "vote") {
-        item = {
-          id: `v-${row.id}`,
-          kind: row.kind,
-          noteId: row.note_id,
-          notePreview: preview,
-          actorId: row.user_id,
-          ts,
-          read: false,
-        };
+        item = { id: `v-${row.id}`, kind: row.kind, noteId, notePreview: preview, actorId: row.user_id, ts, read: false };
       } else if (kind === "reaction") {
-        item = {
-          id: `r-${row.id}`,
-          kind: "reaction",
-          noteId: row.note_id,
-          notePreview: preview,
-          actorId: row.user_id,
-          emoji: row.emoji,
-          ts,
-          read: false,
-        };
+        item = { id: `r-${row.id}`, kind: "reaction", noteId, notePreview: preview, actorId: row.user_id, emoji: row.emoji, ts, read: false };
       } else if (kind === "report") {
-        item = {
-          id: `rep-${row.id}`,
-          kind: "report",
-          noteId: row.note_id,
-          notePreview: preview,
-          actorId: null,
-          ts,
-          read: false,
-        };
+        item = { id: `n-${row.id}`, kind: "report", noteId, notePreview: preview, actorId: null, ts, read: false };
       }
-      if (item) setItems((prev) => [item!, ...prev].slice(0, 50));
+      if (item) setItems((prev) => [item!, ...prev.filter((p) => p.id !== item!.id)].slice(0, 50));
     };
 
     const ch = supabase
@@ -192,31 +178,31 @@ export const Inbox = ({ userId }: Props) => {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "note_votes" }, (p) => handle("vote", p))
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "note_votes" }, (p) => handle("vote", p))
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "note_reactions" }, (p) => handle("reaction", p))
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "reports" }, (p) => handle("report", p))
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "inbox_notifications", filter: `recipient_id=eq.${userId}` }, (p) => handle("report", p))
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(ch);
-    };
+    return () => { supabase.removeChannel(ch); };
   }, [userId]);
 
-  // Resolve nicknames for actors
+  // Resolve actor nicknames + avatars
   useEffect(() => {
-    const missing = Array.from(
-      new Set(items.map((i) => i.actorId).filter((id): id is string => !!id && !(id in nicknames)))
-    );
+    const missing = Array.from(new Set(items.map((i) => i.actorId).filter((id): id is string => !!id && !(id in actorMeta))));
     if (missing.length === 0) return;
     (async () => {
-      const { data } = await (supabase as any).rpc("get_nicknames", { ids: missing });
-      if (data) {
-        setNicknames((prev) => {
-          const next = { ...prev };
-          for (const r of data as { id: string; nickname: string }[]) next[r.id] = r.nickname;
-          return next;
-        });
-      }
+      const [{ data: nicks }, { data: profs }] = await Promise.all([
+        (supabase as any).rpc("get_nicknames", { ids: missing }),
+        supabase.from("user_profiles").select("user_id, avatar_key").in("user_id", missing),
+      ]);
+      const profMap = new Map((profs ?? []).map((p: any) => [p.user_id, p.avatar_key]));
+      setActorMeta((prev) => {
+        const next = { ...prev };
+        for (const r of (nicks ?? []) as { id: string; nickname: string }[]) {
+          next[r.id] = { nickname: r.nickname, avatar_key: (profMap.get(r.id) as string) ?? "sparkle" };
+        }
+        return next;
+      });
     })();
-  }, [items, nicknames]);
+  }, [items, actorMeta]);
 
   const unread = useMemo(() => items.filter((i) => !i.read).length, [items]);
 
@@ -230,13 +216,7 @@ export const Inbox = ({ userId }: Props) => {
   if (!userId) return null;
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        if (o) markAllRead();
-      }}
-    >
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (o) markAllRead(); }}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="icon" className="relative h-9 w-9 rounded-full" title="Inbox">
           <Bell className="h-4 w-4" />
@@ -261,7 +241,13 @@ export const Inbox = ({ userId }: Props) => {
               nothing yet — your notes haven't gotten reactions
             </p>
           ) : (
-            items.map((it) => <InboxRow key={it.id} item={it} actorName={it.actorId ? nicknames[it.actorId] : undefined} />)
+            items.map((it) => (
+              <InboxRow
+                key={it.id}
+                item={it}
+                actorMeta={it.actorId ? actorMeta[it.actorId] : undefined}
+              />
+            ))
           )}
         </div>
       </PopoverContent>
@@ -269,8 +255,8 @@ export const Inbox = ({ userId }: Props) => {
   );
 };
 
-function InboxRow({ item, actorName }: { item: ActivityItem; actorName?: string }) {
-  const { kind, notePreview, ts, read, emoji } = item;
+function InboxRow({ item, actorMeta }: { item: ActivityItem; actorMeta?: { nickname: string; avatar_key: string } }) {
+  const { kind, notePreview, ts, read, emoji, actorId } = item;
   const when = relativeTime(ts);
 
   const icon =
@@ -279,17 +265,33 @@ function InboxRow({ item, actorName }: { item: ActivityItem; actorName?: string 
     : kind === "report" ? <Flag className="h-3.5 w-3.5 text-destructive" />
     : <Smile className="h-3.5 w-3.5 text-primary" />;
 
+  const actorEl = actorId ? (
+    <Link
+      to={`/u/${actorId}`}
+      className="font-bold underline-offset-2 hover:underline"
+    >
+      {actorMeta?.nickname ?? "someone"}
+    </Link>
+  ) : (
+    <b>someone</b>
+  );
+
   const text =
-    kind === "like" ? <><b>{actorName ?? "someone"}</b> liked your note</>
-    : kind === "dislike" ? <><b>{actorName ?? "someone"}</b> disliked your note</>
+    kind === "like" ? <>{actorEl} liked your note</>
+    : kind === "dislike" ? <>{actorEl} disliked your note</>
     : kind === "report" ? <>your note was <b>reported</b></>
-    : <><b>{actorName ?? "someone"}</b> reacted {emoji} to your note</>;
+    : <>{actorEl} reacted {emoji} to your note</>;
 
   return (
     <div className={cn("flex items-start gap-2 border-b border-border/30 px-3 py-2 last:border-0", !read && "bg-primary/5")}>
-      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted">{icon}</div>
+      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+        {actorId ? <Avatar avatarKey={actorMeta?.avatar_key} size="xs" /> : <div className="flex h-5 w-5 items-center justify-center rounded-full bg-muted">{icon}</div>}
+      </div>
       <div className="min-w-0 flex-1">
-        <p className="font-note text-sm text-foreground">{text}</p>
+        <p className="flex items-center gap-1 font-note text-sm text-foreground">
+          {actorId && <span className="opacity-70">{icon}</span>}
+          <span>{text}</span>
+        </p>
         {notePreview && (
           <p className="truncate font-handwritten text-xs text-muted-foreground">"{notePreview}"</p>
         )}
