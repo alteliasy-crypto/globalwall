@@ -19,7 +19,7 @@ import { toast } from "sonner";
 const Index = () => {
   const { user, profile, loading, needsCaptcha, signInWithCaptcha, setNickname, startOver } = useAuth();
   const [notes, setNotes] = useState<NoteData[]>([]);
-  const [nicknames, setNicknames] = useState<Record<string, string>>({});
+  const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
   const [newColor, setNewColor] = useState<NoteColor>("yellow");
   const [transform, setTransform] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
   const canvasRef = useRef<InfiniteCanvasHandle>(null);
@@ -40,21 +40,25 @@ const Index = () => {
     })();
   }, [user]);
 
-  // Resolve nicknames for visible notes
+  // Resolve nicknames + avatars for visible notes
   useEffect(() => {
-    const missing = Array.from(new Set(notes.map((n) => n.user_id))).filter((id) => !(id in nicknames));
+    const missing = Array.from(new Set(notes.map((n) => n.user_id))).filter((id) => !(id in authorMeta));
     if (missing.length === 0) return;
     (async () => {
-      const { data } = await (supabase as any).rpc("get_nicknames", { ids: missing });
-      if (data) {
-        setNicknames((prev) => {
-          const next = { ...prev };
-          for (const row of data as { id: string; nickname: string }[]) next[row.id] = row.nickname;
-          return next;
-        });
-      }
+      const [{ data: nicks }, { data: profs }] = await Promise.all([
+        (supabase as any).rpc("get_nicknames", { ids: missing }),
+        supabase.from("user_profiles").select("user_id, avatar_key").in("user_id", missing),
+      ]);
+      const profMap = new Map((profs ?? []).map((p: any) => [p.user_id, p.avatar_key]));
+      setAuthorMeta((prev) => {
+        const next = { ...prev };
+        for (const row of (nicks ?? []) as { id: string; nickname: string }[]) {
+          next[row.id] = { nickname: row.nickname, avatar_key: (profMap.get(row.id) as string) ?? "sparkle" };
+        }
+        return next;
+      });
     })();
-  }, [notes, nicknames]);
+  }, [notes, authorMeta]);
 
   // Realtime
   useEffect(() => {
