@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { NoteReactions } from "./NoteReactions";
 import { NoteVotes } from "./NoteVotes";
 import { NoteFavorite } from "./NoteFavorite";
+import { NicknameLink } from "./NicknameLink";
+import { Avatar } from "./Avatar";
 import {
   Popover,
   PopoverContent,
