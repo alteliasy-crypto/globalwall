@@ -40,6 +40,7 @@ export interface NoteData {
 interface Props {
   note: NoteData;
   authorNickname?: string;
+  authorAvatarKey?: string;
   isOwner: boolean;
   isAuthed: boolean;
   currentUserId: string | null;
