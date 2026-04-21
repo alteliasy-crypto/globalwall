@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          progress: number
+          target: number
+          task_date: string
+          task_description: string
+          task_key: string
+          task_title: string
+          user_id: string
+          xp_reward: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress?: number
+          target?: number
+          task_date: string
+          task_description: string
+          task_key: string
+          task_title: string
+          user_id: string
+          xp_reward?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress?: number
+          target?: number
+          task_date?: string
+          task_description?: string
+          task_key?: string
+          task_title?: string
+          user_id?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string
@@ -257,6 +299,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progress: {
+        Row: {
+          bonus_note_slots: number
+          created_at: string
+          last_login_date: string | null
+          level: number
+          streak_days: number
+          tasks_completed: number
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          bonus_note_slots?: number
+          created_at?: string
+          last_login_date?: string | null
+          level?: number
+          streak_days?: number
+          tasks_completed?: number
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          bonus_note_slots?: number
+          created_at?: string
+          last_login_date?: string | null
+          level?: number
+          streak_days?: number
+          tasks_completed?: number
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string
@@ -286,11 +364,46 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calc_level: { Args: { _xp: number }; Returns: number }
+      complete_daily_task: {
+        Args: never
+        Returns: {
+          awarded: boolean
+          bonus_note_slots: number
+          level: number
+          xp: number
+        }[]
+      }
+      get_my_progress: {
+        Args: never
+        Returns: {
+          bonus_note_slots: number
+          last_login_date: string
+          level: number
+          streak_days: number
+          tasks_completed: number
+          xp: number
+        }[]
+      }
       get_nicknames: {
         Args: { ids: string[] }
         Returns: {
           id: string
           nickname: string
+        }[]
+      }
+      get_or_assign_daily_task: {
+        Args: never
+        Returns: {
+          completed_at: string
+          id: string
+          progress: number
+          target: number
+          task_date: string
+          task_description: string
+          task_key: string
+          task_title: string
+          xp_reward: number
         }[]
       }
       get_public_profile: {
