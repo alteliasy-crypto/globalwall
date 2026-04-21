@@ -170,8 +170,37 @@ const Profile = () => {
             </div>
           </div>
 
+          {/* Level / streak */}
+          {userProgress && (
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <div className="sm:col-span-2">
+                <LevelBar xp={userProgress.xp} />
+              </div>
+              <div className="flex items-center justify-between gap-2 rounded-xl border border-border/50 bg-muted/40 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <Flame className="h-5 w-5 text-primary" />
+                  <div>
+                    <div className="font-handwritten text-2xl font-bold leading-none tabular-nums">
+                      {userProgress.streak_days}
+                    </div>
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">day streak</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center justify-end gap-1 font-handwritten text-lg font-bold tabular-nums">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    Lv {userProgress.level}
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    +{userProgress.bonus_note_slots} slots
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Stats */}
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-5">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
             <Stat label="notes" value={profile.notes_count} />
             <Stat label="followers" value={profile.follower_count} />
             <Stat label="following" value={profile.following_count} />

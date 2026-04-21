@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v3.0.0";
+export const APP_VERSION = "v3.1.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,17 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v3.1.0",
+    date: "2026-04-21",
+    notes: [
+      "🎯 Daily tasks! A new random task drops every UTC midnight (never the same as yesterday)",
+      "✨ XP & levels — earn xp from daily tasks and login streaks; level shown on every profile",
+      "🔥 Login streaks — log in on consecutive days for bigger xp bonuses (caps at 10-day multiplier)",
+      "📌 Bonus sticky-note slots — every completed daily task unlocks +1 slot beyond the base 3",
+      "📊 New level progress bar on profiles + streak/level chip in the toolbar daily-task popover",
+    ],
+  },
   {
     version: "v3.0.0",
     date: "2026-04-20",
