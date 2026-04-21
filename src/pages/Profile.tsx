@@ -6,11 +6,13 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, UserPlus, UserMinus, Pencil, Flag, ShieldAlert } from "lucide-react";
+import { ArrowLeft, UserPlus, UserMinus, Pencil, Flag, ShieldAlert, Flame, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { colorClass } from "@/lib/noteColors";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
+import { LevelBar } from "@/components/LevelBar";
+import { calcLevel } from "@/hooks/useProgress";
 
 interface PublicProfile {
   user_id: string;
@@ -50,6 +52,7 @@ const Profile = () => {
   const [notes, setNotes] = useState<PublicNote[]>([]);
   const [follows, setFollows] = useState<FollowRow[]>([]);
   const [followNicks, setFollowNicks] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
+  const [userProgress, setUserProgress] = useState<{ xp: number; level: number; streak_days: number; bonus_note_slots: number } | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -58,14 +61,16 @@ const Profile = () => {
   const load = async () => {
     if (!id) return;
     setLoading(true);
-    const [{ data: p }, { data: n }, { data: f }] = await Promise.all([
+    const [{ data: p }, { data: n }, { data: f }, { data: prog }] = await Promise.all([
       (supabase as any).rpc("get_public_profile", { target_id: id }),
       supabase.from("notes").select("id, content, color, created_at, x, y").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("follows").select("follower_id, followed_id").or(`follower_id.eq.${id},followed_id.eq.${id}`),
+      supabase.from("user_progress").select("xp, level, streak_days, bonus_note_slots").eq("user_id", id).maybeSingle(),
     ]);
     setProfile(((p ?? []) as PublicProfile[])[0] ?? null);
     setNotes((n ?? []) as PublicNote[]);
     setFollows((f ?? []) as FollowRow[]);
+    setUserProgress(prog ? { xp: prog.xp ?? 0, level: prog.level ?? calcLevel(prog.xp ?? 0), streak_days: prog.streak_days ?? 0, bonus_note_slots: prog.bonus_note_slots ?? 0 } : { xp: 0, level: 1, streak_days: 0, bonus_note_slots: 0 });
     setLoading(false);
   };
 
