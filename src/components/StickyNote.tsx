@@ -58,6 +58,7 @@ const NOTE_H = 200;
 export const StickyNote = ({
   note,
   authorNickname,
+  authorAvatarKey,
   isOwner,
   isAuthed,
   currentUserId,
