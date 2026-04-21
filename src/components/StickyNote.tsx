@@ -186,13 +186,16 @@ export const StickyNote = ({
             <NoteReactions noteId={note.id} userId={currentUserId} />
           </div>
           <div className="flex items-end justify-between pt-1">
-            <div className="flex flex-col leading-tight">
-              <span className="font-handwritten text-sm opacity-70">
-                — {authorNickname ?? "anon"}
-              </span>
-              {dateStr && (
-                <span className="text-[10px] opacity-50">{dateStr}</span>
-              )}
+            <div className="flex items-center gap-1.5 leading-tight" data-no-drag>
+              <Avatar avatarKey={authorAvatarKey} size="xs" />
+              <div className="flex flex-col leading-tight">
+                <span className="font-handwritten text-sm opacity-80">
+                  — <NicknameLink userId={note.user_id} nickname={authorNickname} />
+                </span>
+                {dateStr && (
+                  <span className="text-[10px] opacity-50">{dateStr}</span>
+                )}
+              </div>
             </div>
             <div className="note-actions flex gap-0.5 opacity-0 transition-opacity" data-no-drag>
               {isOwner ? (
