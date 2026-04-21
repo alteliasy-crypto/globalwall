@@ -50,7 +50,7 @@ export const DailyTaskPanel = ({ userId }: Props) => {
             <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-primary" />
           )}
           {streak > 0 && (
-            <span className="ml-1 flex items-center gap-0.5 rounded-full bg-orange-500/15 px-1.5 text-[11px] font-bold text-orange-600 dark:text-orange-400">
+            <span className="ml-1 flex items-center gap-0.5 rounded-full bg-primary/15 px-1.5 text-[11px] font-bold text-primary">
               <Flame className="h-3 w-3" />
               {streak}
             </span>
@@ -66,7 +66,7 @@ export const DailyTaskPanel = ({ userId }: Props) => {
           )}
           <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Flame className="h-3 w-3 text-orange-500" />
+              <Flame className="h-3 w-3 text-primary" />
               {streak}-day streak
             </span>
             <span className="flex items-center gap-1">
