@@ -165,7 +165,8 @@ const Index = () => {
           <StickyNote
             key={n.id}
             note={n}
-            authorNickname={nicknames[n.user_id]}
+            authorNickname={authorMeta[n.user_id]?.nickname}
+            authorAvatarKey={authorMeta[n.user_id]?.avatar_key}
             isOwner={user?.id === n.user_id}
             isAuthed={!!user}
             currentUserId={user?.id ?? null}
