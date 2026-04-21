@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Avatar } from "./Avatar";
 
 interface Props {
   userId: string | null;
@@ -72,7 +73,8 @@ export const Toolbar = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="rounded-full">
+              <Button variant="outline" size="sm" className="gap-1.5 rounded-full pl-1 pr-3">
+                <Avatar avatarKey={avatarKey} size="sm" />
                 <span className="font-handwritten text-base">{nickname ?? "..."}</span>
               </Button>
             </DropdownMenuTrigger>
@@ -80,6 +82,17 @@ export const Toolbar = ({
               <DropdownMenuLabel className="font-handwritten text-base">
                 Hi, {nickname ?? "friend"}!
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {userId && (
+                <Link to={`/u/${userId}`}>
+                  <DropdownMenuItem>
+                    <UserIcon className="mr-2 h-4 w-4" /> My profile
+                  </DropdownMenuItem>
+                </Link>
+              )}
+              <DropdownMenuItem onClick={onEditProfile}>
+                <UserIcon className="mr-2 h-4 w-4" /> Edit profile
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <Dialog>
                 <DialogTrigger asChild>
