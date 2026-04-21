@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "./ColorPicker";
 import { NoteColor } from "@/lib/noteColors";
-import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2 } from "lucide-react";
+import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { APP_VERSION, DEV_NOTES } from "@/lib/version";
 import {
   DropdownMenu,
