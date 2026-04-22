@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyDailyTaskRefresh } from "./useProgress";
 
 export interface MyProfileExtras {
   bio: string;
@@ -37,7 +38,11 @@ export function useMyProfile(userId: string | null) {
     const { error } = await supabase
       .from("user_profiles")
       .upsert({ user_id: userId, ...next }, { onConflict: "user_id" });
-    if (!error) setExtras(next);
+    if (!error) {
+      setExtras(next);
+      if (typeof patch.bio === "string") notifyDailyTaskRefresh("daily-task:bio-updated");
+      if (typeof patch.avatar_key === "string") notifyDailyTaskRefresh("daily-task:avatar-updated");
+    }
     return { error };
   };
 
