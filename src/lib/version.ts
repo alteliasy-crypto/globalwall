@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v3.1.0";
+export const APP_VERSION = "v3.1.1";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,15 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v3.1.1",
+    date: "2026-04-22",
+    notes: [
+      "🛠️ Fixed daily tasks — progress now updates from real actions like posting, reacting, favoriting, following, and profile edits",
+      "🎁 Task rewards can only be claimed after the requirement is actually met, preventing false completes",
+      "🔄 Task progress now refreshes live across the wall, profile, and toolbar after supported actions",
+    ],
+  },
   {
     version: "v3.1.0",
     date: "2026-04-21",

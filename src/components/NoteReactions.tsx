@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyDailyTaskRefresh } from "@/hooks/useProgress";
 import {
   Popover,
   PopoverContent,
@@ -74,6 +75,7 @@ export const NoteReactions = ({ noteId, userId }: Props) => {
         .from("note_reactions")
         .insert({ note_id: noteId, user_id: userId, emoji });
       if (error && error.code !== "23505") toast.error(error.message);
+      else if (!error) notifyDailyTaskRefresh("daily-task:note-reacted");
     }
   };
 

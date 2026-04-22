@@ -25,7 +25,7 @@ export const DailyTaskPanel = ({ userId }: Props) => {
   const handleComplete = async () => {
     const r = await completeTask();
     if (r.error) {
-      toast.error(r.error.message);
+      toast.error(r.error.message ?? "Finish the task requirements first.");
       return;
     }
     if (r.awarded) {
@@ -107,13 +107,18 @@ export const DailyTaskPanel = ({ userId }: Props) => {
                     <Check className="h-3 w-3" /> Done
                   </span>
                 ) : (
-                  <Button size="sm" onClick={handleComplete} className="h-7 rounded-full">
-                    Mark complete
+                  <Button
+                    size="sm"
+                    onClick={handleComplete}
+                    className="h-7 rounded-full"
+                    disabled={task.progress < task.target}
+                  >
+                    {task.progress >= task.target ? "Claim reward" : "In progress"}
                   </Button>
                 )}
               </div>
               <p className="mt-2 text-[10px] text-muted-foreground">
-                Honor system for now — tap "Mark complete" once you've done it. New task drops every UTC midnight.
+                Progress now updates from your real activity. New task drops every UTC midnight.
               </p>
             </>
           )}

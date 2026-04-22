@@ -22,6 +22,21 @@ export interface DailyTask {
   completed_at: string | null;
 }
 
+const TASK_REFRESH_EVENTS = [
+  "daily-task:refresh",
+  "daily-task:note-created",
+  "daily-task:note-reacted",
+  "daily-task:note-upvoted",
+  "daily-task:note-favorited",
+  "daily-task:user-followed",
+  "daily-task:bio-updated",
+  "daily-task:avatar-updated",
+] as const;
+
+export function notifyDailyTaskRefresh(eventName: (typeof TASK_REFRESH_EVENTS)[number] = "daily-task:refresh") {
+  window.dispatchEvent(new CustomEvent(eventName));
+}
+
 // Mirror of public.calc_level — keep in sync with the SQL function.
 export function calcLevel(xp: number): number {
   return Math.max(1, Math.floor(Math.sqrt(Math.max(xp, 0) / 50)) + 1);
@@ -63,6 +78,24 @@ export function useProgress(userId: string | null) {
   }, [userId]);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const handleRefresh = () => {
+      void refresh();
+    };
+
+    TASK_REFRESH_EVENTS.forEach((eventName) => {
+      window.addEventListener(eventName, handleRefresh);
+    });
+
+    return () => {
+      TASK_REFRESH_EVENTS.forEach((eventName) => {
+        window.removeEventListener(eventName, handleRefresh);
+      });
+    };
+  }, [refresh, userId]);
 
   const completeTask = useCallback(async () => {
     const { data, error } = await (supabase as any).rpc("complete_daily_task");
