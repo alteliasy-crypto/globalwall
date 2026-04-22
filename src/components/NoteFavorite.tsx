@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyDailyTaskRefresh } from "@/hooks/useProgress";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -44,7 +45,10 @@ export const NoteFavorite = ({ noteId, userId }: Props) => {
         .select("id")
         .single();
       if (error) toast.error(error.message);
-      else setFavId((data as any).id);
+      else {
+        setFavId((data as any).id);
+        notifyDailyTaskRefresh("daily-task:note-favorited");
+      }
     }
     setLoading(false);
   };

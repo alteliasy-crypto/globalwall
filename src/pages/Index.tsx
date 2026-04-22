@@ -13,7 +13,7 @@ import { DailyTaskPanel } from "@/components/DailyTaskPanel";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { useProgress } from "@/hooks/useProgress";
+import { notifyDailyTaskRefresh, useProgress } from "@/hooks/useProgress";
 import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";
 import { Button } from "@/components/ui/button";
@@ -109,6 +109,7 @@ const Index = () => {
       y,
     });
     if (error) toast.error(error.message);
+    else notifyDailyTaskRefresh(newColor === "yellow" ? "daily-task:note-created" : "daily-task:refresh");
   };
 
   const updateNote = async (id: string, patch: Partial<NoteData>) => {
