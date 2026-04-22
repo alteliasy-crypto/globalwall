@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { colorClass } from "@/lib/noteColors";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { LevelBar } from "@/components/LevelBar";
-import { calcLevel } from "@/hooks/useProgress";
+import { calcLevel, notifyDailyTaskRefresh } from "@/hooks/useProgress";
 
 interface PublicProfile {
   user_id: string;
@@ -109,7 +109,10 @@ const Profile = () => {
     } else {
       const { error } = await supabase.from("follows").insert({ follower_id: user.id, followed_id: id });
       if (error) toast.error(error.message);
-      else setFollows((p) => [...p, { follower_id: user.id, followed_id: id }]);
+      else {
+        setFollows((p) => [...p, { follower_id: user.id, followed_id: id }]);
+        notifyDailyTaskRefresh("daily-task:user-followed");
+      }
     }
   };
 

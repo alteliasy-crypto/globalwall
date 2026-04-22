@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyDailyTaskRefresh } from "@/hooks/useProgress";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -54,9 +55,11 @@ export const NoteVotes = ({ noteId, userId, isOwner }: Props) => {
     if (mine?.kind === kind) {
       await supabase.from("note_votes").delete().eq("id", mine.id);
     } else if (mine) {
-      await supabase.from("note_votes").update({ kind }).eq("id", mine.id);
+      const { error } = await supabase.from("note_votes").update({ kind }).eq("id", mine.id);
+      if (!error && kind === "like") notifyDailyTaskRefresh("daily-task:note-upvoted");
     } else {
-      await supabase.from("note_votes").insert({ note_id: noteId, user_id: userId, kind });
+      const { error } = await supabase.from("note_votes").insert({ note_id: noteId, user_id: userId, kind });
+      if (!error && kind === "like") notifyDailyTaskRefresh("daily-task:note-upvoted");
     }
   };
 
