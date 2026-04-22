@@ -9,7 +9,7 @@ interface Props {
 
 export const AvatarPicker = ({ value, onChange }: Props) => {
   return (
-    <div className="grid grid-cols-6 gap-2">
+    <div className="grid grid-cols-6 gap-2 sm:grid-cols-8">
       {AVATAR_PRESETS.map((a) => {
         const active = a.key === value;
         return (

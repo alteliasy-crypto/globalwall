@@ -1,4 +1,4 @@
-export type NoteColor = "yellow" | "pink" | "blue" | "green" | "orange" | "purple" | "mint" | "coral";
+export type NoteColor = "yellow" | "pink" | "blue" | "green" | "orange" | "purple" | "mint" | "coral" | "peach" | "lilac" | "aqua" | "lime";
 
 export const NOTE_COLORS: { id: NoteColor; label: string; bg: string; ring: string }[] = [
   { id: "yellow", label: "Sunshine", bg: "bg-note-yellow", ring: "ring-note-yellow" },
@@ -9,6 +9,10 @@ export const NOTE_COLORS: { id: NoteColor; label: string; bg: string; ring: stri
   { id: "purple", label: "Lavender", bg: "bg-note-purple", ring: "ring-note-purple" },
   { id: "mint",   label: "Mint", bg: "bg-note-mint", ring: "ring-note-mint" },
   { id: "coral",  label: "Coral", bg: "bg-note-coral", ring: "ring-note-coral" },
+  { id: "peach",  label: "Peach", bg: "bg-note-peach", ring: "ring-note-peach" },
+  { id: "lilac",  label: "Lilac", bg: "bg-note-lilac", ring: "ring-note-lilac" },
+  { id: "aqua",   label: "Aqua", bg: "bg-note-aqua", ring: "ring-note-aqua" },
+  { id: "lime",   label: "Lime Pop", bg: "bg-note-lime", ring: "ring-note-lime" },
 ];
 
 export const colorClass = (c: string) => {

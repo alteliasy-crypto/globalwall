@@ -20,6 +20,18 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
   { key: "robot", emoji: "🤖", bg: "bg-slate-200", ring: "ring-slate-400" },
   { key: "alien", emoji: "👽", bg: "bg-emerald-200", ring: "ring-emerald-400" },
   { key: "dragon", emoji: "🐲", bg: "bg-teal-200", ring: "ring-teal-400" },
+  { key: "butterfly", emoji: "🦋", bg: "bg-fuchsia-200", ring: "ring-fuchsia-400" },
+  { key: "tiger", emoji: "🐯", bg: "bg-amber-300", ring: "ring-amber-500" },
+  { key: "koala", emoji: "🐨", bg: "bg-stone-200", ring: "ring-stone-400" },
+  { key: "penguin", emoji: "🐧", bg: "bg-cyan-100", ring: "ring-cyan-400" },
+  { key: "unicorn", emoji: "🦄", bg: "bg-pink-100", ring: "ring-pink-500" },
+  { key: "bee", emoji: "🐝", bg: "bg-yellow-200", ring: "ring-yellow-500" },
+  { key: "cherry", emoji: "🍒", bg: "bg-red-100", ring: "ring-red-400" },
+  { key: "moon", emoji: "🌙", bg: "bg-indigo-200", ring: "ring-indigo-400" },
+  { key: "sunflower", emoji: "🌻", bg: "bg-yellow-100", ring: "ring-orange-400" },
+  { key: "dice", emoji: "🎲", bg: "bg-lime-200", ring: "ring-lime-400" },
+  { key: "music", emoji: "🎧", bg: "bg-violet-100", ring: "ring-violet-500" },
+  { key: "pixel-heart", emoji: "💖", bg: "bg-rose-100", ring: "ring-rose-500" },
 ];
 
 export const AVATAR_BY_KEY: Record<string, AvatarPreset> = Object.fromEntries(

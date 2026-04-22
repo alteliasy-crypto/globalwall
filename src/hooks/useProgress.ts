@@ -8,6 +8,9 @@ export interface MyProgress {
   last_login_date: string | null;
   bonus_note_slots: number;
   tasks_completed: number;
+  current_boost_pct: number;
+  tomorrow_boost_pct: number;
+  tasks_done_today: number;
 }
 
 export interface DailyTask {
@@ -60,21 +63,35 @@ export function useProgress(userId: string | null) {
   const [progress, setProgress] = useState<MyProgress | null>(null);
   const [task, setTask] = useState<DailyTask | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     if (!userId) {
       setProgress(null);
       setTask(null);
       setLoading(false);
       return;
     }
-    const [{ data: prog }, { data: t }] = await Promise.all([
-      (supabase as any).rpc("get_my_progress"),
-      (supabase as any).rpc("get_or_assign_daily_task"),
-    ]);
-    setProgress(((prog ?? []) as MyProgress[])[0] ?? null);
-    setTask(((t ?? []) as DailyTask[])[0] ?? null);
-    setLoading(false);
+    try {
+      const [{ data: prog, error: progError }, { data: t, error: taskError }] = await Promise.all([
+        (supabase as any).rpc("get_my_progress"),
+        (supabase as any).rpc("get_or_assign_daily_task"),
+      ]);
+
+      if (progError) throw progError;
+      if (taskError) throw taskError;
+
+      setProgress(((prog ?? []) as MyProgress[])[0] ?? null);
+      setTask(((t ?? []) as DailyTask[])[0] ?? null);
+    } catch (err: any) {
+      setProgress(null);
+      setTask(null);
+      setError(err?.message ?? "Could not load progress.");
+    } finally {
+      setLoading(false);
+    }
   }, [userId]);
 
   useEffect(() => { refresh(); }, [refresh]);
@@ -100,10 +117,28 @@ export function useProgress(userId: string | null) {
   const completeTask = useCallback(async () => {
     const { data, error } = await (supabase as any).rpc("complete_daily_task");
     if (error) return { error, awarded: false };
-    const row = ((data ?? []) as { xp: number; level: number; bonus_note_slots: number; awarded: boolean }[])[0];
+    const row = ((data ?? []) as {
+      xp: number;
+      level: number;
+      bonus_note_slots: number;
+      awarded: boolean;
+      awarded_xp: number;
+      current_boost_pct: number;
+      tomorrow_boost_pct: number;
+      tasks_done_today: number;
+    }[])[0];
     await refresh();
-    return { error: null, awarded: !!row?.awarded, xp: row?.xp, level: row?.level };
+    return {
+      error: null,
+      awarded: !!row?.awarded,
+      xp: row?.xp,
+      level: row?.level,
+      awardedXp: row?.awarded_xp ?? 0,
+      currentBoostPct: row?.current_boost_pct ?? 0,
+      tomorrowBoostPct: row?.tomorrow_boost_pct ?? 0,
+      tasksDoneToday: row?.tasks_done_today ?? 0,
+    };
   }, [refresh]);
 
-  return { progress, task, loading, refresh, completeTask };
+  return { progress, task, loading, error, refresh, completeTask };
 }

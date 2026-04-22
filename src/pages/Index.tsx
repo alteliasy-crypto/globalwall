@@ -29,7 +29,18 @@ const Index = () => {
   const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
   const [newColor, setNewColor] = useState<NoteColor>("yellow");
   const [transform, setTransform] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
+  const [showLaunchEvent, setShowLaunchEvent] = useState(false);
   const canvasRef = useRef<InfiniteCanvasHandle>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const key = `global-wall-launch-${APP_VERSION}`;
+    const seen = window.localStorage.getItem(key);
+    if (!seen) {
+      setShowLaunchEvent(true);
+      window.localStorage.setItem(key, "seen");
+    }
+  }, []);
 
   // Load all notes
   useEffect(() => {
@@ -169,6 +180,9 @@ const Index = () => {
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
+      {showLaunchEvent && (
+        <MaintenanceScreen dismissLabel="Drop me in" onDismiss={() => setShowLaunchEvent(false)} />
+      )}
       <InfiniteCanvas ref={canvasRef} onTransformChange={setTransform}>
         {notes.map((n) => (
           <StickyNote

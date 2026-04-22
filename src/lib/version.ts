@@ -1,13 +1,24 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v3.1.1";
+export const APP_VERSION = "v4.0.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
 export const MAINTENANCE_MODE = false;
-export const MAINTENANCE_ETA = "~5 minutes";
+export const MAINTENANCE_ETA = "~20 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v4.0.0",
+    date: "2026-04-22",
+    notes: [
+      "♾️ Endless task chain — finish one and another measurable challenge spawns instantly",
+      "⚡ Momentum rewards — the more tasks you clear today, the bigger tomorrow's XP boost gets",
+      "🎉 Task panel now hits harder with chain, boost, and share-for-random-reward feedback",
+      "🎨 More sticky note colors and many more profile pictures for better wall identity",
+      "🛠️ Maintenance mode got rebuilt into a full event-style screen and can now be used as a live splash experience",
+    ],
+  },
   {
     version: "v3.1.1",
     date: "2026-04-22",
