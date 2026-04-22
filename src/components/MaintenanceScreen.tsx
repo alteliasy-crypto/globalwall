@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import { MAINTENANCE_ETA } from "@/lib/version";
 import { Sparkles, Heart, Trophy, Zap, Rocket, PartyPopper } from "lucide-react";
 
+interface Props {
+  dismissLabel?: string;
+  onDismiss?: () => void;
+}
+
 interface Bubble {
   id: number;
   x: number;
@@ -13,7 +18,7 @@ interface Bubble {
 
 const BUBBLE_EMOJIS = ["🌟", "🎈", "🍩", "🌈", "🍕", "💎", "🔥", "🦄", "🍀", "🪐"];
 
-export const MaintenanceScreen = () => {
+export const MaintenanceScreen = ({ dismissLabel = "Enter the wall", onDismiss }: Props) => {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -77,7 +82,7 @@ export const MaintenanceScreen = () => {
       <div className="relative w-full max-w-2xl rounded-3xl border-2 border-border bg-card/95 p-8 text-center shadow-2xl backdrop-blur-sm animate-enter">
         <div className="mb-3 flex items-center justify-center gap-2">
           <Sparkles className="h-6 w-6 animate-pulse text-primary" />
-          <span className="rounded-full bg-amber-400/20 px-3 py-0.5 font-handwritten text-sm font-bold text-amber-700 dark:text-amber-400">
+          <span className="rounded-full bg-primary/15 px-3 py-0.5 font-handwritten text-sm font-bold text-primary">
             under construction
           </span>
           <Sparkles className="h-6 w-6 animate-pulse text-primary" />
@@ -137,6 +142,11 @@ export const MaintenanceScreen = () => {
             <Button variant="outline" size="sm" className="mt-4 rounded-full" onClick={() => { setScore(0); setCombo(0); }}>
               <PartyPopper className="mr-1 h-3.5 w-3.5" /> Reset run
             </Button>
+            {onDismiss && (
+              <Button size="sm" className="mt-2 rounded-full" onClick={onDismiss}>
+                {dismissLabel}
+              </Button>
+            )}
           </div>
         </div>
 

@@ -45,6 +45,10 @@
     --note-purple: 270 70% 80%;
     --note-mint: 160 65% 78%;
     --note-coral: 10 90% 78%;
+    --note-peach: 24 100% 83%;
+    --note-lilac: 284 75% 86%;
+    --note-aqua: 188 82% 80%;
+    --note-lime: 86 78% 76%;
 
     --note-shadow: 25 30% 25%;
 
@@ -139,6 +143,22 @@
 
   .sticky-note:hover .note-actions { opacity: 1; }
 
+  .reward-burst {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reward-burst::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(circle, hsla(var(--primary) / 0.22) 0%, transparent 55%);
+    opacity: 0;
+    transform: scale(0.7);
+    animation: reward-burst 0.9s ease-out forwards;
+    pointer-events: none;
+  }
+
   .pin {
     background: radial-gradient(circle at 35% 35%, hsl(0 85% 70%), hsl(0 80% 45%) 60%, hsl(0 75% 30%));
     box-shadow:
@@ -146,4 +166,10 @@
       inset -1px -1px 2px hsla(0 0% 0% / 0.3),
       inset 1px 1px 1px hsla(0 0% 100% / 0.4);
   }
+}
+
+@keyframes reward-burst {
+  0% { opacity: 0; transform: scale(0.7); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.2); }
 }
