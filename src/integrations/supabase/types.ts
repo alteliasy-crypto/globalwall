@@ -369,8 +369,12 @@ export type Database = {
         Args: never
         Returns: {
           awarded: boolean
+          awarded_xp: number
           bonus_note_slots: number
+          current_boost_pct: number
           level: number
+          tasks_done_today: number
+          tomorrow_boost_pct: number
           xp: number
         }[]
       }
@@ -378,10 +382,13 @@ export type Database = {
         Args: never
         Returns: {
           bonus_note_slots: number
+          current_boost_pct: number
           last_login_date: string
           level: number
           streak_days: number
           tasks_completed: number
+          tasks_done_today: number
+          tomorrow_boost_pct: number
           xp: number
         }[]
       }
@@ -421,6 +428,18 @@ export type Database = {
           user_id: string
           warnings: number
         }[]
+      }
+      get_task_progress: {
+        Args: { _day: string; _task_key: string; _uid: string }
+        Returns: number
+      }
+      get_xp_boost_pct: {
+        Args: { _day: string; _uid: string }
+        Returns: number
+      }
+      is_task_assignable: {
+        Args: { _day: string; _task_key: string; _uid: string }
+        Returns: boolean
       }
     }
     Enums: {
