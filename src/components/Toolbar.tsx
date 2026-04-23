@@ -39,10 +39,12 @@ interface Props {
   inboxSlot?: React.ReactNode;
   favoritesSlot?: React.ReactNode;
   dailySlot?: React.ReactNode;
+  marketSlot?: React.ReactNode;
+  leaderboardSlot?: React.ReactNode;
 }
 
 export const Toolbar = ({
-  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot,
+  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -64,6 +66,8 @@ export const Toolbar = ({
             <ColorPicker value={newColor} onChange={setNewColor} size="sm" />
           </div>
 
+          {leaderboardSlot}
+          {marketSlot}
           {favoritesSlot}
           {dailySlot}
           {inboxSlot}

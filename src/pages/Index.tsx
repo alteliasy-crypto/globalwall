@@ -9,11 +9,13 @@ import { InfiniteCanvas, InfiniteCanvasHandle, ViewTransform } from "@/component
 import { LiveChat } from "@/components/LiveChat";
 import { Inbox } from "@/components/Inbox";
 import { FavoritesPanel } from "@/components/FavoritesPanel";
-import { DailyTaskPanel } from "@/components/DailyTaskPanel";
+import { QuestLadderPanel } from "@/components/QuestLadderPanel";
+import { WallMarket } from "@/components/WallMarket";
+import { Leaderboard } from "@/components/Leaderboard";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { notifyDailyTaskRefresh, useProgress } from "@/hooks/useProgress";
+import { notifyQuestRefresh, useQuests } from "@/hooks/useQuests";
 import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";
 import { Button } from "@/components/ui/button";
@@ -23,7 +25,7 @@ import { toast } from "sonner";
 const Index = () => {
   const { user, profile, loading, needsCaptcha, signInWithCaptcha, setNickname, startOver } = useAuth();
   const myExtras = useMyProfile(user?.id ?? null);
-  const { progress } = useProgress(user?.id ?? null);
+  const { wallet } = useQuests(user?.id ?? null);
   const [editOpen, setEditOpen] = useState(false);
   const [notes, setNotes] = useState<NoteData[]>([]);
   const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
@@ -99,7 +101,7 @@ const Index = () => {
   }, [user]);
 
   const myNotes = useMemo(() => notes.filter((n) => n.user_id === user?.id), [notes, user]);
-  const noteCap = 3 + (progress?.bonus_note_slots ?? 0);
+  const noteCap = 3 + Math.floor((wallet?.total_quests_done ?? 0) / 2);
 
   const addNote = async () => {
     if (!user || !profile) return;
@@ -120,7 +122,7 @@ const Index = () => {
       y,
     });
     if (error) toast.error(error.message);
-    else notifyDailyTaskRefresh(newColor === "yellow" ? "daily-task:note-created" : "daily-task:refresh");
+    else notifyQuestRefresh("daily-task:note-created");
   };
 
   const updateNote = async (id: string, patch: Partial<NoteData>) => {
@@ -226,7 +228,9 @@ const Index = () => {
         canAdd={!!profile && !profile.is_banned && myNotes.length < noteCap}
         inboxSlot={<Inbox userId={user?.id ?? null} />}
         favoritesSlot={<FavoritesPanel userId={user?.id ?? null} onJumpTo={jumpToWorld} />}
-        dailySlot={<DailyTaskPanel userId={user?.id ?? null} />}
+        dailySlot={<QuestLadderPanel userId={user?.id ?? null} />}
+        marketSlot={<WallMarket userId={user?.id ?? null} />}
+        leaderboardSlot={<Leaderboard userId={user?.id ?? null} />}
         onDeleteAllMine={deleteAllMine}
       />
 
