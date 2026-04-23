@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      active_boosts: {
+        Row: {
+          boost_key: string
+          created_at: string
+          expires_at: string
+          id: string
+          multiplier: number
+          user_id: string
+        }
+        Insert: {
+          boost_key: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          multiplier?: number
+          user_id: string
+        }
+        Update: {
+          boost_key?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          multiplier?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cosmetics_owned: {
+        Row: {
+          acquired_at: string
+          id: string
+          item_key: string
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          id?: string
+          item_key: string
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          id?: string
+          item_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_tasks: {
         Row: {
           completed_at: string | null
@@ -236,6 +284,87 @@ export type Database = {
           },
         ]
       }
+      quest_history: {
+        Row: {
+          coins_awarded: number
+          completed_at: string
+          fire_level: number
+          id: string
+          multiplier: number
+          quest_key: string
+          tokens_awarded: number
+          user_id: string
+        }
+        Insert: {
+          coins_awarded: number
+          completed_at?: string
+          fire_level: number
+          id?: string
+          multiplier?: number
+          quest_key: string
+          tokens_awarded: number
+          user_id: string
+        }
+        Update: {
+          coins_awarded?: number
+          completed_at?: string
+          fire_level?: number
+          id?: string
+          multiplier?: number
+          quest_key?: string
+          tokens_awarded?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quest_ladder: {
+        Row: {
+          assigned_at: string
+          baseline: number
+          coin_reward: number
+          description: string
+          fire_level: number
+          id: string
+          progress: number
+          quest_key: string
+          slot: number
+          target: number
+          title: string
+          token_reward: number
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          baseline?: number
+          coin_reward: number
+          description: string
+          fire_level: number
+          id?: string
+          progress?: number
+          quest_key: string
+          slot: number
+          target: number
+          title: string
+          token_reward: number
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          baseline?: number
+          coin_reward?: number
+          description?: string
+          fire_level?: number
+          id?: string
+          progress?: number
+          quest_key?: string
+          slot?: number
+          target?: number
+          title?: string
+          token_reward?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           created_at: string
@@ -274,6 +403,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_currency: {
+        Row: {
+          best_streak: number
+          coins: number
+          created_at: string
+          heat_streak: number
+          highest_fire_cleared: number
+          last_quest_completed_at: string | null
+          tokens: number
+          total_quests_done: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number
+          coins?: number
+          created_at?: string
+          heat_streak?: number
+          highest_fire_cleared?: number
+          last_quest_completed_at?: string | null
+          tokens?: number
+          total_quests_done?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number
+          coins?: number
+          created_at?: string
+          heat_streak?: number
+          highest_fire_cleared?: number
+          last_quest_completed_at?: string | null
+          tokens?: number
+          total_quests_done?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {
@@ -379,6 +547,28 @@ export type Database = {
           xp_reward: number
         }[]
       }
+      complete_quest: {
+        Args: { _quest_id: string }
+        Returns: {
+          awarded: boolean
+          coins_awarded: number
+          heat_streak: number
+          highest_fire: number
+          multiplier: number
+          new_quest_coins: number
+          new_quest_desc: string
+          new_quest_fire: number
+          new_quest_id: string
+          new_quest_key: string
+          new_quest_slot: number
+          new_quest_target: number
+          new_quest_title: string
+          new_quest_tokens: number
+          tokens_awarded: number
+          total_coins: number
+          total_tokens: number
+        }[]
+      }
       get_my_progress: {
         Args: never
         Returns: {
@@ -391,6 +581,20 @@ export type Database = {
           tasks_done_today: number
           tomorrow_boost_pct: number
           xp: number
+        }[]
+      }
+      get_my_wallet: {
+        Args: never
+        Returns: {
+          active_boost_expires_at: string
+          active_boost_key: string
+          best_streak: number
+          coins: number
+          current_multiplier: number
+          heat_streak: number
+          highest_fire_cleared: number
+          tokens: number
+          total_quests_done: number
         }[]
       }
       get_nicknames: {
@@ -414,6 +618,21 @@ export type Database = {
           xp_reward: number
         }[]
       }
+      get_or_seed_quest_ladder: {
+        Args: never
+        Returns: {
+          coin_reward: number
+          description: string
+          fire_level: number
+          id: string
+          progress: number
+          quest_key: string
+          slot: number
+          target: number
+          title: string
+          token_reward: number
+        }[]
+      }
       get_public_profile: {
         Args: { target_id: string }
         Returns: {
@@ -434,6 +653,20 @@ export type Database = {
         Args: { _day: string; _task_key: string; _uid: string }
         Returns: number
       }
+      get_wall_street_rankings: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_key: string
+          coins: number
+          heat_streak: number
+          highest_fire_cleared: number
+          nickname: string
+          rank: number
+          tokens: number
+          total_quests_done: number
+          user_id: string
+        }[]
+      }
       get_xp_boost_pct: {
         Args: { _day: string; _uid: string }
         Returns: number
@@ -442,6 +675,20 @@ export type Database = {
         Args: { _day: string; _task_key: string; _uid: string }
         Returns: boolean
       }
+      purchase_market_item: {
+        Args: { _item_key: string }
+        Returns: {
+          coins: number
+          message: string
+          success: boolean
+          tokens: number
+        }[]
+      }
+      quest_progress_for: {
+        Args: { _baseline: number; _quest_key: string; _uid: string }
+        Returns: number
+      }
+      roll_quest: { Args: { _uid: string }; Returns: Json }
       test_function: { Args: never; Returns: undefined }
     }
     Enums: {
