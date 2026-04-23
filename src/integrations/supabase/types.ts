@@ -368,14 +368,15 @@ export type Database = {
       complete_daily_task: {
         Args: never
         Returns: {
-          awarded: boolean
-          awarded_xp: number
-          bonus_note_slots: number
-          current_boost_pct: number
-          level: number
-          tasks_done_today: number
-          tomorrow_boost_pct: number
-          xp: number
+          completed_at: string
+          id: string
+          progress: number
+          target: number
+          task_date: string
+          task_description: string
+          task_key: string
+          task_title: string
+          xp_reward: number
         }[]
       }
       get_my_progress: {
@@ -441,6 +442,7 @@ export type Database = {
         Args: { _day: string; _task_key: string; _uid: string }
         Returns: boolean
       }
+      test_function: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
