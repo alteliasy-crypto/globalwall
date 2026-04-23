@@ -93,19 +93,19 @@ export const MaintenanceScreen = ({ dismissLabel = "Enter the wall", onDismiss }
         </div>
 
         <h1 className="font-handwritten text-4xl font-bold text-foreground">
-          we're shipping something new!
+          v5.0 — Quest Ladder is live!
         </h1>
 
         <p className="mt-3 font-note text-base leading-relaxed text-foreground">
-          the global wall is getting an upgrade. should be back in about{" "}
+          Daily tasks are gone. Welcome to{" "}
           <span className="rounded-md bg-primary/15 px-2 py-0.5 font-bold text-primary">
-            {MAINTENANCE_ETA}
+            infinite quests, coins, tokens & heat streaks
           </span>
         </p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-[1.2fr_0.8fr]">
           <div className="rounded-2xl border border-border/50 bg-muted/40 p-4 text-left">
-            <p className="font-handwritten text-xl text-foreground">Live maintenance event</p>
+            <p className="font-handwritten text-xl text-foreground">Bubble pop while you read</p>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               <div className="reward-burst rounded-xl border border-border/50 bg-background/80 p-3">
                 <Heart className="mx-auto h-4 w-4 fill-primary text-primary" />
@@ -123,21 +123,20 @@ export const MaintenanceScreen = ({ dismissLabel = "Enter the wall", onDismiss }
                 <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Rank</p>
               </div>
             </div>
-            <div className="mt-4 rounded-xl border border-border/50 bg-background/70 p-3">
-              <p className="font-note text-sm text-foreground">We're using maintenance mode as a hype splash now — faster updates, better releases, and a tiny game while the wall cools off.</p>
-            </div>
           </div>
 
           <div className="rounded-2xl border border-border/50 bg-background/75 p-4 text-left">
             <div className="flex items-center gap-2">
               <Rocket className="h-4 w-4 text-primary" />
-              <p className="font-handwritten text-xl font-bold">Patch goals</p>
+              <p className="font-handwritten text-xl font-bold">What's new</p>
             </div>
             <ul className="mt-3 space-y-2 font-note text-sm text-foreground">
-              <li>• endless measurable task loops</li>
-              <li>• stronger rewards + streak momentum</li>
-              <li>• richer wall identity and cosmetics</li>
-              <li>• more playful micro-interactions</li>
+              <li>🪜 3-slot infinite Quest Ladder</li>
+              <li>🔥 Fire levels 1–10 with scaling rewards</li>
+              <li>🪙 Coins + 💎 tokens currency system</li>
+              <li>🛒 Wall Market shop & boosts</li>
+              <li>🏆 Wall Street Rankings leaderboard</li>
+              <li>🌶️ Heat streak multipliers (up to 3x)</li>
             </ul>
             <Button variant="outline" size="sm" className="mt-4 rounded-full" onClick={() => { setScore(0); setCombo(0); }}>
               <PartyPopper className="mr-1 h-3.5 w-3.5" /> Reset run
