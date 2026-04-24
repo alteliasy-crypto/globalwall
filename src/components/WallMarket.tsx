@@ -58,8 +58,8 @@ export const WallMarket = ({ userId }: Props) => {
           <span className="hidden font-handwritten text-base sm:inline">Market</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] max-w-3xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="h-[92vh] max-h-[92vh] w-[95vw] max-w-[1400px] overflow-hidden p-0 flex flex-col">
+        <DialogHeader className="border-b border-border/50 p-4">
           <DialogTitle className="font-handwritten text-3xl flex items-center gap-2">
             <ShoppingBag className="h-6 w-6 text-primary" /> Wall Market
           </DialogTitle>
@@ -68,34 +68,36 @@ export const WallMarket = ({ userId }: Props) => {
             <span className="flex items-center gap-1 font-bold text-fuchsia-600"><Gem className="h-4 w-4" />{wallet?.tokens ?? 0}</span>
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-          {ITEMS.map((it) => {
-            const Icon = it.icon;
-            const canAfford = (wallet?.coins ?? 0) >= it.coins && (wallet?.tokens ?? 0) >= it.tokens;
-            return (
-              <div key={it.key} className={cn(
-                "group rounded-2xl border border-border/50 bg-card p-3 transition-all hover:scale-[1.02] hover:shadow-lg",
-                !canAfford && "opacity-60"
-              )}>
-                <div className={cn("mb-2 flex h-16 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-inner", it.accent)}>
-                  <Icon className="h-7 w-7" />
-                </div>
-                <h4 className="font-handwritten text-lg font-bold leading-tight">{it.label}</h4>
-                <p className="mt-0.5 font-note text-xs text-muted-foreground">{it.desc}</p>
-                <div className="mt-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-bold">
-                    {it.coins > 0 && <span className="flex items-center gap-0.5 text-amber-600"><Coins className="h-3 w-3" />{it.coins}</span>}
-                    {it.tokens > 0 && <span className="flex items-center gap-0.5 text-fuchsia-600"><Gem className="h-3 w-3" />{it.tokens}</span>}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {ITEMS.map((it) => {
+              const Icon = it.icon;
+              const canAfford = (wallet?.coins ?? 0) >= it.coins && (wallet?.tokens ?? 0) >= it.tokens;
+              return (
+                <div key={it.key} className={cn(
+                  "group rounded-2xl border border-border/50 bg-card p-4 transition-all hover:scale-[1.02] hover:shadow-lg",
+                  !canAfford && "opacity-60"
+                )}>
+                  <div className={cn("mb-3 flex h-20 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-inner", it.accent)}>
+                    <Icon className="h-9 w-9" />
                   </div>
-                  <Button size="sm" className="h-7 rounded-full text-xs" disabled={!canAfford || busy === it.key} onClick={() => buy(it)}>
-                    {busy === it.key ? "..." : "Buy"}
-                  </Button>
+                  <h4 className="font-handwritten text-xl font-bold leading-tight">{it.label}</h4>
+                  <p className="mt-1 font-note text-sm text-muted-foreground">{it.desc}</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm font-bold">
+                      {it.coins > 0 && <span className="flex items-center gap-0.5 text-amber-600"><Coins className="h-3.5 w-3.5" />{it.coins}</span>}
+                      {it.tokens > 0 && <span className="flex items-center gap-0.5 text-fuchsia-600"><Gem className="h-3.5 w-3.5" />{it.tokens}</span>}
+                    </div>
+                    <Button size="sm" className="h-8 rounded-full" disabled={!canAfford || busy === it.key} onClick={() => buy(it)}>
+                      {busy === it.key ? "..." : "Buy"}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          <p className="pt-4 text-center text-xs text-muted-foreground">Boosts stack with your heat streak. More items dropping soon 👀</p>
         </div>
-        <p className="text-center text-[11px] text-muted-foreground">Boosts stack with your heat streak. More items dropping soon 👀</p>
       </DialogContent>
     </Dialog>
   );
