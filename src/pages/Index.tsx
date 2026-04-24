@@ -12,6 +12,7 @@ import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { QuestLadderPanel } from "@/components/QuestLadderPanel";
 import { WallMarket } from "@/components/WallMarket";
 import { Leaderboard } from "@/components/Leaderboard";
+import { QuestSmokeTest } from "@/components/QuestSmokeTest";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
