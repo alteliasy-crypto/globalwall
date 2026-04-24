@@ -233,6 +233,7 @@ const Index = () => {
         dailySlot={<QuestLadderPanel userId={user?.id ?? null} />}
         marketSlot={<WallMarket userId={user?.id ?? null} />}
         leaderboardSlot={<Leaderboard userId={user?.id ?? null} />}
+        diagnoseSlot={<QuestSmokeTest userId={user?.id ?? null} />}
         onDeleteAllMine={deleteAllMine}
       />
 
