@@ -41,10 +41,11 @@ interface Props {
   dailySlot?: React.ReactNode;
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
+  diagnoseSlot?: React.ReactNode;
 }
 
 export const Toolbar = ({
-  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot,
+  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, diagnoseSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -70,6 +71,7 @@ export const Toolbar = ({
           {marketSlot}
           {favoritesSlot}
           {dailySlot}
+          {diagnoseSlot}
           {inboxSlot}
 
           <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full">
