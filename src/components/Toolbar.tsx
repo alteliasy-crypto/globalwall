@@ -71,6 +71,7 @@ export const Toolbar = ({
           {marketSlot}
           {favoritesSlot}
           {dailySlot}
+          {diagnoseSlot}
           {inboxSlot}
 
           <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full">
