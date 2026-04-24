@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
@@ -15,8 +16,8 @@ const fireGradient = (n: number) => {
   return "from-amber-400 to-yellow-300";
 };
 
-const FireBar = ({ level }: { level: number }) => (
-  <div className="flex items-center gap-0.5" title={`Fire level ${level}/10`}>
+const FireBar = forwardRef<HTMLDivElement, { level: number }>(({ level }, ref) => (
+  <div ref={ref} className="flex items-center gap-0.5" title={`Fire level ${level}/10`}>
     {Array.from({ length: 10 }).map((_, i) => (
       <Flame
         key={i}
@@ -28,7 +29,8 @@ const FireBar = ({ level }: { level: number }) => (
     ))}
     <span className="ml-1 text-[10px] font-bold text-primary">{level}/10</span>
   </div>
-);
+));
+FireBar.displayName = "FireBar";
 
 export const QuestLadderPanel = ({ userId }: Props) => {
   const { quests, wallet, loading, error, completeQuest } = useQuests(userId);
