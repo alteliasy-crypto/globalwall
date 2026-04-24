@@ -206,10 +206,11 @@ const Index = () => {
       </InfiniteCanvas>
 
       {!loading && notes.length === 0 && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <p className="font-handwritten text-4xl text-foreground/40">
-            An empty wall... be the first to pin something!
-          </p>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
+          <div className="rounded-3xl border border-border/40 bg-background/70 px-8 py-6 text-center shadow-xl backdrop-blur-md animate-fade-in">
+            <p className="font-handwritten text-4xl text-foreground/70">An empty wall…</p>
+            <p className="mt-1 font-handwritten text-lg text-muted-foreground">be the first to pin something ✨</p>
+          </div>
         </div>
       )}
 
@@ -246,42 +247,43 @@ const Index = () => {
         />
       )}
 
-      {/* Canvas controls */}
-      <div className="pointer-events-auto absolute bottom-4 left-4 z-30 flex flex-col gap-1.5 rounded-2xl border border-border/40 bg-background/80 p-1.5 shadow-lg backdrop-blur-md">
+      {/* Canvas controls — floating glass dock */}
+      <div className="pointer-events-auto absolute bottom-4 left-4 z-30 flex items-center gap-1 rounded-full border border-border/40 bg-background/70 px-1.5 py-1 shadow-lg backdrop-blur-md">
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8"
+          className="h-8 w-8 rounded-full"
           onClick={() => canvasRef.current?.recenter()}
           title="Recenter"
         >
           <Locate className="h-4 w-4" />
         </Button>
+        <div className="h-5 w-px bg-border/60" />
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8"
-          onClick={() => canvasRef.current?.zoomBy(1.2)}
-          title="Zoom in"
-        >
-          <ZoomIn className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-8 w-8"
+          className="h-8 w-8 rounded-full"
           onClick={() => canvasRef.current?.zoomBy(1 / 1.2)}
           title="Zoom out"
         >
           <ZoomOut className="h-4 w-4" />
         </Button>
-        <span className="px-1 text-center text-[10px] tabular-nums text-muted-foreground">
+        <span className="min-w-10 px-1 text-center text-[11px] font-bold tabular-nums text-muted-foreground">
           {Math.round(transform.scale * 100)}%
         </span>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 rounded-full"
+          onClick={() => canvasRef.current?.zoomBy(1.2)}
+          title="Zoom in"
+        >
+          <ZoomIn className="h-4 w-4" />
+        </Button>
       </div>
 
-      {/* Version footer */}
-      <div className="pointer-events-none absolute bottom-2 left-1/2 z-30 -translate-x-1/2 font-handwritten text-xs text-foreground/40">
+      {/* Version chip */}
+      <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 rounded-full border border-border/40 bg-background/60 px-3 py-1 font-handwritten text-xs text-foreground/60 shadow-sm backdrop-blur-md">
         Global Wall {APP_VERSION}
       </div>
 

@@ -62,48 +62,6 @@ export type Database = {
         }
         Relationships: []
       }
-      daily_tasks: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          progress: number
-          target: number
-          task_date: string
-          task_description: string
-          task_key: string
-          task_title: string
-          user_id: string
-          xp_reward: number
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          progress?: number
-          target?: number
-          task_date: string
-          task_description: string
-          task_key: string
-          task_title: string
-          user_id: string
-          xp_reward?: number
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          progress?: number
-          target?: number
-          task_date?: string
-          task_description?: string
-          task_key?: string
-          task_title?: string
-          user_id?: string
-          xp_reward?: number
-        }
-        Relationships: []
-      }
       follows: {
         Row: {
           created_at: string
@@ -533,20 +491,6 @@ export type Database = {
     }
     Functions: {
       calc_level: { Args: { _xp: number }; Returns: number }
-      complete_daily_task: {
-        Args: never
-        Returns: {
-          completed_at: string
-          id: string
-          progress: number
-          target: number
-          task_date: string
-          task_description: string
-          task_key: string
-          task_title: string
-          xp_reward: number
-        }[]
-      }
       complete_quest: {
         Args: { _quest_id: string }
         Returns: {
@@ -569,20 +513,6 @@ export type Database = {
           total_tokens: number
         }[]
       }
-      get_my_progress: {
-        Args: never
-        Returns: {
-          bonus_note_slots: number
-          current_boost_pct: number
-          last_login_date: string
-          level: number
-          streak_days: number
-          tasks_completed: number
-          tasks_done_today: number
-          tomorrow_boost_pct: number
-          xp: number
-        }[]
-      }
       get_my_wallet: {
         Args: never
         Returns: {
@@ -602,20 +532,6 @@ export type Database = {
         Returns: {
           id: string
           nickname: string
-        }[]
-      }
-      get_or_assign_daily_task: {
-        Args: never
-        Returns: {
-          completed_at: string
-          id: string
-          progress: number
-          target: number
-          task_date: string
-          task_description: string
-          task_key: string
-          task_title: string
-          xp_reward: number
         }[]
       }
       get_or_seed_quest_ladder: {
@@ -649,10 +565,6 @@ export type Database = {
           warnings: number
         }[]
       }
-      get_task_progress: {
-        Args: { _day: string; _task_key: string; _uid: string }
-        Returns: number
-      }
       get_wall_street_rankings: {
         Args: { _limit?: number }
         Returns: {
@@ -666,14 +578,6 @@ export type Database = {
           total_quests_done: number
           user_id: string
         }[]
-      }
-      get_xp_boost_pct: {
-        Args: { _day: string; _uid: string }
-        Returns: number
-      }
-      is_task_assignable: {
-        Args: { _day: string; _task_key: string; _uid: string }
-        Returns: boolean
       }
       purchase_market_item: {
         Args: { _item_key: string }

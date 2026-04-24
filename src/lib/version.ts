@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v5.0.0";
+export const APP_VERSION = "v5.0.1";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,16 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v5.0.1",
+    date: "2026-04-24",
+    notes: [
+      "🛠️ Fixed Quest Ladder crash — `roll_quest` no longer throws \"missing FROM-clause entry for table 'h'\"; new quests spawn cleanly every time",
+      "🧹 Removed legacy daily-task tables/functions that were conflicting with the Quest Ladder backend",
+      "⚡ Added DB indexes on quest_ladder & quest_history for snappier loads",
+      "🎨 Reworked main screen: floating glass control dock, cleaner empty state, polished version chip",
+    ],
+  },
   {
     version: "v5.0.0",
     date: "2026-04-23",
