@@ -231,7 +231,7 @@ const Index = () => {
         userId={user?.id ?? null}
         nickname={profile?.nickname ?? null}
         avatarKey={myExtras.avatar_key}
-        myCount={myNotes.length}
+        myCount={myCount}
         noteCap={noteCap}
         totalCount={notes.length}
         newColor={newColor}
@@ -239,13 +239,14 @@ const Index = () => {
         onAddNote={addNote}
         onSignOut={startOver}
         onEditProfile={() => setEditOpen(true)}
-        canAdd={!!profile && !profile.is_banned && myNotes.length < noteCap}
+        canAdd={!!profile && !profile.is_banned && recentlyCreated < hourlyCap}
         inboxSlot={<Inbox userId={user?.id ?? null} />}
         favoritesSlot={<FavoritesPanel userId={user?.id ?? null} onJumpTo={jumpToWorld} />}
         dailySlot={<QuestLadderPanel userId={user?.id ?? null} />}
         marketSlot={<WallMarket userId={user?.id ?? null} />}
         leaderboardSlot={<Leaderboard userId={user?.id ?? null} />}
         diagnoseSlot={<QuestSmokeTest userId={user?.id ?? null} />}
+        colorsSlot={<ColorPalettePanel value={newColor} onChange={setNewColor} />}
         onDeleteAllMine={deleteAllMine}
       />
 
