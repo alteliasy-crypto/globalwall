@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Star, Locate, Trash2 } from "lucide-react";
-import { colorClass } from "@/lib/noteColors";
+import { colorStyle } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
 
 interface FavRow {
