@@ -13,6 +13,7 @@ import { QuestLadderPanel } from "@/components/QuestLadderPanel";
 import { WallMarket } from "@/components/WallMarket";
 import { Leaderboard } from "@/components/Leaderboard";
 import { QuestSmokeTest } from "@/components/QuestSmokeTest";
+import { ColorPalettePanel } from "@/components/ColorPalettePanel";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -102,12 +103,23 @@ const Index = () => {
   }, [user]);
 
   const myNotes = useMemo(() => notes.filter((n) => n.user_id === user?.id), [notes, user]);
-  const noteCap = 3 + Math.floor((wallet?.total_quests_done ?? 0) / 2);
+
+  // Rate limit: 15 notes per rolling hour + bonus from quests (1 extra per 2 quests done).
+  // No hard total cap — old notes don't block new placement.
+  const HOURLY_BASE = 15;
+  const bonusFromQuests = Math.floor((wallet?.total_quests_done ?? 0) / 2);
+  const hourlyCap = HOURLY_BASE + bonusFromQuests;
+  const recentlyCreated = useMemo(() => {
+    const cutoff = Date.now() - 60 * 60 * 1000;
+    return myNotes.filter((n) => n.created_at && new Date(n.created_at).getTime() > cutoff).length;
+  }, [myNotes]);
+  const noteCap = hourlyCap; // displayed as "X / hourlyCap this hour"
+  const myCount = recentlyCreated;
 
   const addNote = async () => {
     if (!user || !profile) return;
-    if (myNotes.length >= noteCap) {
-      toast.error(`You've reached ${noteCap} notes — delete one or complete a daily task!`);
+    if (recentlyCreated >= hourlyCap) {
+      toast.error(`Rate limit: ${hourlyCap} notes/hour. Complete more quests to raise it!`);
       return;
     }
     // Drop the new note near the center of the current viewport (in world coords)
