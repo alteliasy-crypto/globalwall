@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Star, Locate, Trash2 } from "lucide-react";
-import { colorClass } from "@/lib/noteColors";
+import { colorStyle } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
 
 interface FavRow {
@@ -119,7 +119,7 @@ export const FavoritesPanel = ({ userId, onJumpTo }: Props) => {
                     "group flex items-start gap-2 border-b border-border/30 p-2 last:border-0",
                   )}
                 >
-                  <div className={cn("h-12 w-12 shrink-0 rounded-sm p-1 text-[9px] leading-tight overflow-hidden", colorClass(n.color))}>
+                  <div style={colorStyle(n.color)} className="h-12 w-12 shrink-0 rounded-sm p-1 text-[9px] leading-tight overflow-hidden">
                     <p className="line-clamp-3 font-note text-foreground">{n.content}</p>
                   </div>
                   <div className="min-w-0 flex-1">

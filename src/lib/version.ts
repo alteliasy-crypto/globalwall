@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v5.0.1";
+export const APP_VERSION = "v5.1.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,17 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v5.1.0",
+    date: "2026-04-24",
+    notes: [
+      "🌈 Hundreds of new colors — new full-page Color Palette with 250+ shades grouped by family + search",
+      "⏱️ Removed the hard 3-note limit — now 15 notes per rolling hour (+1 per 2 quests done)",
+      "🧯 Fixed: extra slots from quests now actually let you place notes (no more phantom limit)",
+      "🪟 Quests, Wall Market, Wall Street Rankings, Live Chat & Colors now open as full-page panels",
+      "📐 Toolbar widened to fit the new buttons; quest tab no longer overflows the screen",
+    ],
+  },
   {
     version: "v5.0.1",
     date: "2026-04-24",

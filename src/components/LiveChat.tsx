@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, X, Users, Send } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { MessageCircle, Users, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { containsProfanity, cleanText } from "@/lib/profanity";
 import { toast } from "sonner";
@@ -126,59 +127,51 @@ export const LiveChat = ({ userId, nickname }: Props) => {
 
   return (
     <>
-      {/* Toggle button — bottom right */}
-      <div className="pointer-events-auto fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
-        {!open && (
-          <Button
-            onClick={() => setOpen(true)}
-            className="relative h-12 w-12 rounded-full p-0 shadow-lg"
-            title="Open chat"
-          >
-            <MessageCircle className="h-5 w-5" />
-            {unread > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-xs font-bold text-destructive-foreground">
-                {unread > 9 ? "9+" : unread}
-              </span>
-            )}
-          </Button>
-        )}
-
-        <div
-          className={cn(
-            "flex w-80 flex-col rounded-2xl border border-border/40 bg-background/95 shadow-2xl backdrop-blur-md transition-all",
-            open ? "h-96 opacity-100" : "pointer-events-none h-0 opacity-0"
-          )}
+      {/* Floating launcher — bottom right */}
+      <div className="pointer-events-auto fixed bottom-4 right-4 z-40">
+        <Button
+          onClick={() => setOpen(true)}
+          className="relative h-12 w-12 rounded-full p-0 shadow-lg"
+          title="Open chat"
         >
-          <div className="flex items-center justify-between border-b border-border/40 px-3 py-2">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="h-4 w-4 text-primary" />
-              <span className="font-handwritten text-lg font-bold">Live chat</span>
-              <span className="flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-xs text-green-700 dark:text-green-400">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
-                <Users className="h-3 w-3" /> {online}
-              </span>
-            </div>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setOpen(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <MessageCircle className="h-5 w-5" />
+          {unread > 0 && !open && (
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-xs font-bold text-destructive-foreground">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          )}
+        </Button>
+      </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-2 overflow-y-auto p-3">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="h-[92vh] max-h-[92vh] w-[95vw] max-w-[1100px] overflow-hidden p-0 flex flex-col">
+          <DialogHeader className="border-b border-border/50 p-4">
+            <DialogTitle className="font-handwritten text-3xl flex items-center gap-2">
+              <MessageCircle className="h-6 w-6 text-primary" /> Live Chat
+              <span className="flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-sm text-green-700 dark:text-green-400">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
+                <Users className="h-3.5 w-3.5" /> {online} online
+              </span>
+            </DialogTitle>
+            <DialogDescription className="font-note text-base">
+              Messages vanish after 60 seconds. Be kind ✨
+            </DialogDescription>
+          </DialogHeader>
+
+          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.length === 0 ? (
-              <p className="mt-8 text-center font-handwritten text-base text-muted-foreground">
+              <p className="mt-16 text-center font-handwritten text-2xl text-muted-foreground">
                 quiet in here... say hi! 👋
-                <br />
-                <span className="text-xs">messages vanish after 60s</span>
               </p>
             ) : (
               messages.map((m) => (
                 <div key={m.id} className={cn("flex flex-col", m.user_id === userId && "items-end")}>
-                  <span className="font-handwritten text-xs text-muted-foreground">
+                  <span className="font-handwritten text-sm text-muted-foreground">
                     {m.nickname}
                   </span>
                   <div
                     className={cn(
-                      "max-w-[85%] rounded-2xl px-3 py-1.5 font-note text-sm",
+                      "max-w-[75%] rounded-2xl px-4 py-2 font-note text-base",
                       m.user_id === userId
                         ? "rounded-tr-sm bg-primary text-primary-foreground"
                         : "rounded-tl-sm bg-muted text-foreground"
@@ -192,7 +185,7 @@ export const LiveChat = ({ userId, nickname }: Props) => {
           </div>
 
           {/* Typing indicator */}
-          <div className="h-5 px-3 text-xs italic text-muted-foreground">
+          <div className="h-6 px-4 text-sm italic text-muted-foreground">
             {(() => {
               const names = Object.values(typingUsers).map((u) => u.nickname);
               if (names.length === 0) return null;
@@ -213,7 +206,7 @@ export const LiveChat = ({ userId, nickname }: Props) => {
             })()}
           </div>
 
-          <div className="flex items-center gap-1.5 border-t border-border/40 p-2">
+          <div className="flex items-center gap-2 border-t border-border/40 p-3">
             <Input
               value={draft}
               onChange={(e) => {
@@ -237,15 +230,15 @@ export const LiveChat = ({ userId, nickname }: Props) => {
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder="say something nice..."
               maxLength={200}
-              className="h-8 font-note"
+              className="h-10 font-note"
               disabled={!userId}
             />
-            <Button size="icon" onClick={send} disabled={!draft.trim() || !userId} className="h-8 w-8 shrink-0">
-              <Send className="h-3.5 w-3.5" />
+            <Button onClick={send} disabled={!draft.trim() || !userId} className="h-10 gap-1.5">
+              <Send className="h-4 w-4" /> Send
             </Button>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, UserPlus, UserMinus, Pencil, Flag, ShieldAlert, Flame, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { colorClass } from "@/lib/noteColors";
+import { colorStyle } from "@/lib/noteColors";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { LevelBar } from "@/components/LevelBar";
 import { calcLevel, notifyDailyTaskRefresh } from "@/hooks/useProgress";
@@ -238,10 +238,8 @@ const Profile = () => {
                 {notes.map((n) => (
                   <div
                     key={n.id}
-                    className={cn(
-                      "rounded-sm p-3 shadow-md transition-transform hover:-rotate-1 hover:scale-105",
-                      colorClass(n.color)
-                    )}
+                    style={colorStyle(n.color)}
+                    className="rounded-sm p-3 shadow-md transition-transform hover:-rotate-1 hover:scale-105"
                   >
                     <p className="line-clamp-6 whitespace-pre-wrap break-words font-note text-sm text-foreground">
                       {n.content}

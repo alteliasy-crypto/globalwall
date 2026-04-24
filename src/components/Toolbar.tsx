@@ -42,14 +42,15 @@ interface Props {
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
   diagnoseSlot?: React.ReactNode;
+  colorsSlot?: React.ReactNode;
 }
 
 export const Toolbar = ({
-  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, diagnoseSlot,
+  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, diagnoseSlot, colorsSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
-      <div className="pointer-events-auto mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-2xl border border-border/40 bg-background/80 px-4 py-2.5 shadow-lg backdrop-blur-md">
+      <div className="pointer-events-auto mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-2xl border border-border/40 bg-background/80 px-4 py-2.5 shadow-lg backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />
           <h1 className="font-handwritten text-2xl font-bold leading-none">Global Wall</h1>
@@ -62,11 +63,12 @@ export const Toolbar = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-2 rounded-full border border-border/50 bg-card/60 px-2.5 py-1 md:flex">
+          <div className="hidden items-center gap-2 rounded-full border border-border/50 bg-card/60 px-2.5 py-1 lg:flex">
             <span className="text-xs text-muted-foreground">Color:</span>
             <ColorPicker value={newColor} onChange={setNewColor} size="sm" />
           </div>
 
+          {colorsSlot}
           {leaderboardSlot}
           {marketSlot}
           {favoritesSlot}
@@ -74,7 +76,7 @@ export const Toolbar = ({
           {diagnoseSlot}
           {inboxSlot}
 
-          <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full">
+          <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full" title={`${myCount}/${noteCap} notes this hour`}>
             <Plus className="h-4 w-4" />
             <span className="font-handwritten text-base">Add note</span>
             <span className="ml-1 rounded-full bg-primary-foreground/20 px-1.5 text-xs">{myCount}/{noteCap}</span>

@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ColorPicker } from "./ColorPicker";
 import { Button } from "@/components/ui/button";
 import { Trash2, Flag, Check, X, Palette } from "lucide-react";
-import { colorClass, NoteColor, rotationFor } from "@/lib/noteColors";
+import { NoteColor, colorStyle, rotationFor } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
 import { NoteReactions } from "./NoteReactions";
 import { NoteVotes } from "./NoteVotes";
@@ -132,7 +132,6 @@ export const StickyNote = ({
       data-note
       className={cn(
         "sticky-note group absolute select-none rounded-sm",
-        colorClass(note.color),
         dragging && "dragging",
         isOwner ? "cursor-grab" : "cursor-default"
       )}
@@ -142,6 +141,7 @@ export const StickyNote = ({
         width: NOTE_W,
         minHeight: NOTE_H,
         transform: dragging ? undefined : `rotate(${rot}deg)`,
+        ...colorStyle(note.color),
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
