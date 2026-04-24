@@ -206,10 +206,11 @@ const Index = () => {
       </InfiniteCanvas>
 
       {!loading && notes.length === 0 && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <p className="font-handwritten text-4xl text-foreground/40">
-            An empty wall... be the first to pin something!
-          </p>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
+          <div className="rounded-3xl border border-border/40 bg-background/70 px-8 py-6 text-center shadow-xl backdrop-blur-md animate-fade-in">
+            <p className="font-handwritten text-4xl text-foreground/70">An empty wall…</p>
+            <p className="mt-1 font-handwritten text-lg text-muted-foreground">be the first to pin something ✨</p>
+          </div>
         </div>
       )}
 
