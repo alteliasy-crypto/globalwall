@@ -406,6 +406,7 @@ export type Database = {
           avatar_key: string
           bio: string
           created_at: string
+          favorite_color: string | null
           updated_at: string
           user_id: string
         }
@@ -413,6 +414,7 @@ export type Database = {
           avatar_key?: string
           bio?: string
           created_at?: string
+          favorite_color?: string | null
           updated_at?: string
           user_id: string
         }
@@ -420,6 +422,7 @@ export type Database = {
           avatar_key?: string
           bio?: string
           created_at?: string
+          favorite_color?: string | null
           updated_at?: string
           user_id?: string
         }
