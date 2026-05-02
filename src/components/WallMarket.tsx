@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { ShoppingBag, Coins, Gem, Sparkles, Shield, Zap, Palette, Award } from "lucide-react";
@@ -35,6 +35,20 @@ interface Props { userId: string | null }
 export const WallMarket = ({ userId }: Props) => {
   const { wallet, refresh } = useQuests(userId);
   const [busy, setBusy] = useState<string | null>(null);
+  const [owned, setOwned] = useState<Set<string>>(new Set());
+  const [activeBoosts, setActiveBoosts] = useState<Set<string>>(new Set());
+
+  const loadInventory = async () => {
+    if (!userId) return;
+    const [{ data: cos }, { data: boosts }] = await Promise.all([
+      supabase.from("cosmetics_owned").select("item_key").eq("user_id", userId),
+      supabase.from("active_boosts").select("boost_key").eq("user_id", userId).gt("expires_at", new Date().toISOString()),
+    ]);
+    setOwned(new Set((cos ?? []).map((r: any) => r.item_key)));
+    setActiveBoosts(new Set((boosts ?? []).map((r: any) => r.boost_key)));
+  };
+
+  useEffect(() => { void loadInventory(); }, [userId]);
 
   const buy = async (item: Item) => {
     setBusy(item.key);
@@ -45,6 +59,7 @@ export const WallMarket = ({ userId }: Props) => {
     if (!row?.success) { toast.error(row?.message ?? "Purchase failed"); return; }
     toast.success(row.message);
     await refresh();
+    await loadInventory();
     notifyQuestRefresh();
   };
 
@@ -73,6 +88,8 @@ export const WallMarket = ({ userId }: Props) => {
             {ITEMS.map((it) => {
               const Icon = it.icon;
               const canAfford = (wallet?.coins ?? 0) >= it.coins && (wallet?.tokens ?? 0) >= it.tokens;
+              const isOwned = it.type === "cosmetic" && owned.has(it.key);
+              const isActive = it.type === "boost" && activeBoosts.has(it.key);
               return (
                 <div key={it.key} className={cn(
                   "group rounded-2xl border border-border/50 bg-card p-4 transition-all hover:scale-[1.02] hover:shadow-lg",
@@ -83,13 +100,18 @@ export const WallMarket = ({ userId }: Props) => {
                   </div>
                   <h4 className="font-handwritten text-xl font-bold leading-tight">{it.label}</h4>
                   <p className="mt-1 font-note text-sm text-muted-foreground">{it.desc}</p>
+                  {(isOwned || isActive) && (
+                    <div className="mt-2 rounded-full bg-primary/15 px-2 py-0.5 text-center text-xs font-bold text-primary">
+                      {isOwned ? "Owned" : "Active"}
+                    </div>
+                  )}
                   <div className="mt-3 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm font-bold">
                       {it.coins > 0 && <span className="flex items-center gap-0.5 text-amber-600"><Coins className="h-3.5 w-3.5" />{it.coins}</span>}
                       {it.tokens > 0 && <span className="flex items-center gap-0.5 text-fuchsia-600"><Gem className="h-3.5 w-3.5" />{it.tokens}</span>}
                     </div>
-                    <Button size="sm" className="h-8 rounded-full" disabled={!canAfford || busy === it.key} onClick={() => buy(it)}>
-                      {busy === it.key ? "..." : "Buy"}
+                    <Button size="sm" className="h-8 rounded-full" disabled={!canAfford || busy === it.key || isOwned} onClick={() => buy(it)}>
+                      {busy === it.key ? "..." : isOwned ? "Owned" : isActive ? "Stack" : "Buy"}
                     </Button>
                   </div>
                 </div>
