@@ -15,10 +15,11 @@ interface Props {
   favoriteColors?: NoteColor[];
   onSetFavorite?: (c: NoteColor) => void | Promise<void>;
   onToggleFavorite?: (c: NoteColor) => void | Promise<void>;
+  compact?: boolean;
 }
 
 /** Full-page color palette: 264 colors grouped by family, with a Favorite Color slot. */
-export const ColorPalettePanel = ({ value, onChange, favoriteColor, favoriteColors = [], onSetFavorite, onToggleFavorite }: Props) => {
+export const ColorPalettePanel = ({ value, onChange, favoriteColor, favoriteColors = [], onSetFavorite, onToggleFavorite, compact = false }: Props) => {
   const [query, setQuery] = useState("");
   const families = useMemo(() => {
     const map = new Map<string, typeof NOTE_COLORS>();
@@ -52,13 +53,13 @@ export const ColorPalettePanel = ({ value, onChange, favoriteColor, favoriteColo
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5 rounded-full" title="All colors">
+        <Button variant="outline" size={compact ? "icon" : "sm"} className={cn("rounded-full", !compact && "gap-1.5")} title="All colors">
           <Palette className="h-4 w-4" />
           <span
-            className="h-3 w-3 rounded-full border border-foreground/20"
+            className={cn("rounded-full border border-foreground/20", compact ? "h-2.5 w-2.5" : "h-3 w-3")}
             style={colorStyle(value)}
           />
-          <span className="hidden font-handwritten text-base sm:inline">Colors</span>
+          {!compact && <span className="hidden font-handwritten text-base sm:inline">Colors</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="h-[92vh] max-h-[92vh] w-[95vw] max-w-[1400px] overflow-hidden p-0 flex flex-col">
