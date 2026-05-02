@@ -45,6 +45,11 @@ const Index = () => {
     }
   }, []);
 
+  // Once favorite color loads, prefer it as the default new-note color
+  useEffect(() => {
+    if (myExtras.favorite_color) setNewColor((c) => (c === "yellow" ? myExtras.favorite_color! : c));
+  }, [myExtras.favorite_color]);
+
   // Load all notes
   useEffect(() => {
     if (!user) return;
