@@ -82,13 +82,6 @@ export const QuestLadderPanel = ({ userId }: Props) => {
               <Trophy className="h-5 w-5 text-primary" />
               <span className="font-handwritten text-3xl font-bold leading-none">Quest Ladder</span>
             </DialogTitle>
-            <button
-              onClick={handleShare}
-              className="hover-scale inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/60 bg-background/80 text-primary"
-              title="Share for random reward"
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
           </div>
           <DialogDescription className="sr-only">Complete quests to earn coins, tokens, and bonus note slots.</DialogDescription>
           <div className="mt-3 grid grid-cols-3 gap-3 text-center">
