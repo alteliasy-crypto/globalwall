@@ -198,6 +198,7 @@ export const StickyNote = ({
                   <ColorPalettePanel
                     value={note.color as NoteColor}
                     onChange={(c) => onUpdate(note.id, { color: c })}
+                    compact
                   />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
