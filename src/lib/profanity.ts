@@ -3,11 +3,12 @@
 // Not bulletproof — moderation reports still exist as a backstop.
 
 const BAD_WORDS = [
-  "fuck", "shit", "bitch", "asshole", "bastard", "dick", "pussy", "cock",
-  "cunt", "slut", "whore", "fag", "faggot", "nigger", "nigga", "retard",
-  "retarded", "tranny", "kike", "spic", "chink", "gook", "wetback",
-  "rape", "rapist", "kill yourself", "kys", "kill urself",
-  "porn", "nude", "nudes", "sex",
+  "fuck", "fucking", "fucker", "motherfucker", "shit", "bullshit", "bitch", "asshole", "bastard",
+  "dick", "pussy", "cock", "cunt", "slut", "whore", "fag", "faggot", "nigger", "nigga",
+  "retard", "retarded", "tranny", "kike", "spic", "chink", "gook", "wetback", "coon", "beaner", "dyke",
+  "rape", "rapist", "molest", "molester", "pedo", "pedophile", "kill yourself", "kys", "kill urself",
+  "suicide", "hang yourself", "go die", "die loser", "porn", "porno", "nude", "nudes", "sex", "horny",
+  "onlyfans", "blowjob", "handjob", "hitler", "nazi", "swastika", "discord.gg", "telegram.me", "t.me", "http", "www",
 ];
 
 // Map leet/symbol substitutions to letters
@@ -29,7 +30,8 @@ function normalize(input: string): string {
 export function containsProfanity(text: string): boolean {
   const norm = normalize(text);
   const compact = norm.replace(/\s+/g, "");
-  return BAD_WORDS.some((w) => {
+  const repeatedSpam = /(.)\1{9,}/.test(norm) || (compact.length >= 12 && compact === compact[0].repeat(compact.length));
+  return repeatedSpam || BAD_WORDS.some((w) => {
     if (w.includes(" ")) return norm.includes(w);
     return compact.includes(w);
   });
