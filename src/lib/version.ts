@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v5.1.1";
+export const APP_VERSION = "v5.1.2";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,18 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v5.1.2",
+    date: "2026-05-02",
+    notes: [
+      "🧯 Maintenance splash temporarily removed from the main wall flow",
+      "⚙️ Added Settings with a device chooser for auto, phone, tablet, and desktop frames",
+      "🎨 Color Palette now supports multiple favorite colors with a dedicated Favorites tab",
+      "🛒 Wall Market now shows owned cosmetics and active boosts after purchase",
+      "🪜 Quest Ladder now fills 20 live slots and keeps replacements refreshing instantly",
+      "🛡️ Strengthened note profanity/spam filtering and enabled voting on your own notes",
+    ],
+  },
   {
     version: "v5.1.1",
     date: "2026-05-02",
