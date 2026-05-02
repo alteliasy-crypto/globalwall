@@ -12,7 +12,6 @@ import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { QuestLadderPanel } from "@/components/QuestLadderPanel";
 import { WallMarket } from "@/components/WallMarket";
 import { Leaderboard } from "@/components/Leaderboard";
-import { QuestSmokeTest } from "@/components/QuestSmokeTest";
 import { ColorPalettePanel } from "@/components/ColorPalettePanel";
 import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
@@ -31,7 +30,7 @@ const Index = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [notes, setNotes] = useState<NoteData[]>([]);
   const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
-  const [newColor, setNewColor] = useState<NoteColor>("yellow");
+  const [newColor, setNewColor] = useState<NoteColor>(myExtras.favorite_color ?? "yellow");
   const [transform, setTransform] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
   const [showLaunchEvent, setShowLaunchEvent] = useState(false);
   const canvasRef = useRef<InfiniteCanvasHandle>(null);
@@ -245,8 +244,14 @@ const Index = () => {
         dailySlot={<QuestLadderPanel userId={user?.id ?? null} />}
         marketSlot={<WallMarket userId={user?.id ?? null} />}
         leaderboardSlot={<Leaderboard userId={user?.id ?? null} />}
-        diagnoseSlot={<QuestSmokeTest userId={user?.id ?? null} />}
-        colorsSlot={<ColorPalettePanel value={newColor} onChange={setNewColor} />}
+        colorsSlot={
+          <ColorPalettePanel
+            value={newColor}
+            onChange={setNewColor}
+            favoriteColor={myExtras.favorite_color ?? null}
+            onSetFavorite={async (c) => { await myExtras.save({ favorite_color: c }); }}
+          />
+        }
         onDeleteAllMine={deleteAllMine}
       />
 
