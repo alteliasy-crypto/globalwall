@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ColorPicker } from "./ColorPicker";
 import { NoteColor } from "@/lib/noteColors";
 import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -41,12 +40,11 @@ interface Props {
   dailySlot?: React.ReactNode;
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
-  diagnoseSlot?: React.ReactNode;
   colorsSlot?: React.ReactNode;
 }
 
 export const Toolbar = ({
-  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, diagnoseSlot, colorsSlot,
+  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, colorsSlot,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -63,17 +61,11 @@ export const Toolbar = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-2 rounded-full border border-border/50 bg-card/60 px-2.5 py-1 lg:flex">
-            <span className="text-xs text-muted-foreground">Color:</span>
-            <ColorPicker value={newColor} onChange={setNewColor} size="sm" />
-          </div>
-
           {colorsSlot}
           {leaderboardSlot}
           {marketSlot}
           {favoritesSlot}
           {dailySlot}
-          {diagnoseSlot}
           {inboxSlot}
 
           <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full" title={`${myCount}/${noteCap} notes this hour`}>
@@ -116,7 +108,7 @@ export const Toolbar = ({
                     <DialogTitle className="font-handwritten text-3xl">How the wall works</DialogTitle>
                     <DialogDescription className="font-note text-base">
                       <ul className="mt-2 space-y-2 text-foreground">
-                        <li>📌 Drop up to <b>3 sticky notes</b> on the global cork board.</li>
+                        <li>📌 Drop up to <b>15 sticky notes per hour</b> on the global cork board (more as you complete quests).</li>
                         <li>🎨 Pick a color and write up to 140 characters.</li>
                         <li>✋ <b>Drag</b> your own notes anywhere. <b>Double-click</b> to edit.</li>
                         <li>🌍 Everything is <b>live</b> — refresh-free, see updates instantly.</li>

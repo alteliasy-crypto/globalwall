@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { Flame, Coins, Gem, Zap, Trophy, Share2, Sparkles } from "lucide-react";
+import { Flame, Coins, Gem, Zap, Trophy, Sparkles } from "lucide-react";
 import { useQuests, type Quest } from "@/hooks/useQuests";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -51,19 +51,6 @@ export const QuestLadderPanel = ({ userId }: Props) => {
     );
   };
 
-  const handleShare = async () => {
-    const rewards = ["Mystery confetti ✨", "Rare cork aura 🪩", "Lucky streak charm 🍀", "Hype wave 🌊", "Golden pin 📌"];
-    const reward = rewards[Math.floor(Math.random() * rewards.length)];
-    try {
-      const shareData = { title: "Global Wall", text: "Pin something on Global Wall — chaotic, social, addictive.", url: window.location.origin };
-      if (navigator.share) await navigator.share(shareData);
-      else await navigator.clipboard.writeText(window.location.origin);
-      toast.success(`Shared! Reward: ${reward}`);
-    } catch {
-      toast.info("Share canceled — try again next time.");
-    }
-  };
-
   const readyCount = quests.filter((q) => q.progress >= q.target).length;
 
   return (
@@ -95,13 +82,6 @@ export const QuestLadderPanel = ({ userId }: Props) => {
               <Trophy className="h-5 w-5 text-primary" />
               <span className="font-handwritten text-3xl font-bold leading-none">Quest Ladder</span>
             </DialogTitle>
-            <button
-              onClick={handleShare}
-              className="hover-scale inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/60 bg-background/80 text-primary"
-              title="Share for random reward"
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
           </div>
           <DialogDescription className="sr-only">Complete quests to earn coins, tokens, and bonus note slots.</DialogDescription>
           <div className="mt-3 grid grid-cols-3 gap-3 text-center">

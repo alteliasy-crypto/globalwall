@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v5.1.0";
+export const APP_VERSION = "v5.1.1";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,17 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v5.1.1",
+    date: "2026-05-02",
+    notes: [
+      "🧯 Fixed the *real* 3-note hard cap — the database trigger now enforces 15/hour (+1 per 2 quests done) instead of a hard total",
+      "🐛 Fixed Wall Market crash: \"column reference 'coins' is ambiguous\"",
+      "🪜 Quest Ladder pool expanded to 20 quests — exactly 2 per Fire level (1🔥 → 10🔥)",
+      "🎨 Removed the legacy quick-color strip — only the full 264-color Palette remains, with a Favorite Color one-click button",
+      "🧹 Removed the Diagnose dev button and the Share button from Quest Ladder",
+    ],
+  },
   {
     version: "v5.1.0",
     date: "2026-04-24",
