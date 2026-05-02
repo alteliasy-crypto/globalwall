@@ -63,7 +63,7 @@ export const NoteVotes = ({ noteId, userId, isOwner }: Props) => {
     }
   };
 
-  const disabled = !userId || isOwner;
+  const disabled = !userId;
 
   return (
     <div className="flex items-center gap-1" data-no-drag>
@@ -71,7 +71,7 @@ export const NoteVotes = ({ noteId, userId, isOwner }: Props) => {
         onClick={() => cast("like")}
         onPointerDown={(e) => e.stopPropagation()}
         disabled={disabled}
-        title={isOwner ? "You can't vote on your own note" : "Like"}
+        title={isOwner ? "Like your note" : "Like"}
         className={cn(
           "flex h-6 items-center gap-1 rounded-full border px-1.5 text-xs transition-all",
           mine?.kind === "like"
@@ -87,7 +87,7 @@ export const NoteVotes = ({ noteId, userId, isOwner }: Props) => {
         onClick={() => cast("dislike")}
         onPointerDown={(e) => e.stopPropagation()}
         disabled={disabled}
-        title={isOwner ? "You can't vote on your own note" : "Dislike"}
+        title={isOwner ? "Dislike your note" : "Dislike"}
         className={cn(
           "flex h-6 items-center gap-1 rounded-full border px-1.5 text-xs transition-all",
           mine?.kind === "dislike"
