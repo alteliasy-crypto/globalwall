@@ -51,7 +51,7 @@ export const NoteVotes = ({ noteId, userId, isOwner }: Props) => {
   const mine = userId ? votes.find((v) => v.user_id === userId) : null;
 
   const cast = async (kind: "like" | "dislike") => {
-    if (!userId || isOwner) return;
+    if (!userId) return;
     if (mine?.kind === kind) {
       await supabase.from("note_votes").delete().eq("id", mine.id);
     } else if (mine) {
