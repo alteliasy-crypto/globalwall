@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { NoteColor } from "@/lib/noteColors";
-import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon } from "lucide-react";
+import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import { APP_VERSION, DEV_NOTES } from "@/lib/version";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,10 +42,12 @@ interface Props {
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
   colorsSlot?: React.ReactNode;
+  deviceMode?: "auto" | "phone" | "tablet" | "desktop";
+  onDeviceModeChange?: (mode: "auto" | "phone" | "tablet" | "desktop") => void;
 }
 
 export const Toolbar = ({
-  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, colorsSlot,
+  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, colorsSlot, deviceMode = "auto", onDeviceModeChange,
 }: Props) => {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
@@ -96,6 +99,35 @@ export const Toolbar = ({
               <DropdownMenuItem onClick={onEditProfile}>
                 <UserIcon className="mr-2 h-4 w-4" /> Edit profile
               </DropdownMenuItem>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Settings className="mr-2 h-4 w-4" /> Settings
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="font-handwritten text-3xl">Settings</DialogTitle>
+                    <DialogDescription className="font-note text-base">
+                      Choose the preview frame for this device.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-muted-foreground">Device chooser</label>
+                    <Select value={deviceMode} onValueChange={(v) => onDeviceModeChange?.(v as "auto" | "phone" | "tablet" | "desktop")}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Auto" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="auto">Auto / full screen</SelectItem>
+                        <SelectItem value="phone">Phone frame</SelectItem>
+                        <SelectItem value="tablet">Tablet frame</SelectItem>
+                        <SelectItem value="desktop">Desktop frame</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <DropdownMenuSeparator />
               <Dialog>
                 <DialogTrigger asChild>
