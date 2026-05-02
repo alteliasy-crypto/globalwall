@@ -21,6 +21,7 @@ import { containsProfanity } from "@/lib/profanity";
 import { Button } from "@/components/ui/button";
 import { Locate, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type DeviceMode = "auto" | "phone" | "tablet" | "desktop";
 
