@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { ColorPicker } from "./ColorPicker";
+import { ColorPalettePanel } from "./ColorPalettePanel";
 import { Button } from "@/components/ui/button";
-import { Trash2, Flag, Check, X, Palette } from "lucide-react";
+import { Trash2, Flag, Check, X } from "lucide-react";
 import { NoteColor, colorStyle, rotationFor } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
 import { NoteReactions } from "./NoteReactions";
@@ -10,11 +10,6 @@ import { NoteVotes } from "./NoteVotes";
 import { NoteFavorite } from "./NoteFavorite";
 import { NicknameLink } from "./NicknameLink";
 import { Avatar } from "./Avatar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -200,20 +195,10 @@ export const StickyNote = ({
             <div className="note-actions flex gap-0.5 opacity-0 transition-opacity" data-no-drag>
               {isOwner ? (
                 <>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button size="icon" variant="ghost" className="h-7 w-7" title="Change color">
-                        <Palette className="h-3.5 w-3.5" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-2" data-no-drag>
-                      <ColorPicker
-                        value={note.color as NoteColor}
-                        onChange={(c) => onUpdate(note.id, { color: c })}
-                        size="sm"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <ColorPalettePanel
+                    value={note.color as NoteColor}
+                    onChange={(c) => onUpdate(note.id, { color: c })}
+                  />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button size="icon" variant="ghost" className="h-7 w-7" title="Delete">
