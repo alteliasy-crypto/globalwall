@@ -407,6 +407,7 @@ export type Database = {
           bio: string
           created_at: string
           favorite_color: string | null
+          favorite_colors: string[]
           updated_at: string
           user_id: string
         }
@@ -415,6 +416,7 @@ export type Database = {
           bio?: string
           created_at?: string
           favorite_color?: string | null
+          favorite_colors?: string[]
           updated_at?: string
           user_id: string
         }
@@ -423,6 +425,7 @@ export type Database = {
           bio?: string
           created_at?: string
           favorite_color?: string | null
+          favorite_colors?: string[]
           updated_at?: string
           user_id?: string
         }

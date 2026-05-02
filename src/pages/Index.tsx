@@ -13,15 +13,24 @@ import { QuestLadderPanel } from "@/components/QuestLadderPanel";
 import { WallMarket } from "@/components/WallMarket";
 import { Leaderboard } from "@/components/Leaderboard";
 import { ColorPalettePanel } from "@/components/ColorPalettePanel";
-import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { notifyQuestRefresh, useQuests } from "@/hooks/useQuests";
-import { MAINTENANCE_MODE, APP_VERSION } from "@/lib/version";
+import { APP_VERSION } from "@/lib/version";
 import { containsProfanity } from "@/lib/profanity";
 import { Button } from "@/components/ui/button";
 import { Locate, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+type DeviceMode = "auto" | "phone" | "tablet" | "desktop";
+
+const DEVICE_FRAME_CLASS: Record<DeviceMode, string> = {
+  auto: "h-screen w-screen",
+  phone: "mx-auto my-3 h-[calc(100vh-1.5rem)] w-[390px] max-w-[calc(100vw-1.5rem)] rounded-[2rem] border-4 border-border shadow-2xl",
+  tablet: "mx-auto my-3 h-[calc(100vh-1.5rem)] w-[820px] max-w-[calc(100vw-1.5rem)] rounded-[1.5rem] border-4 border-border shadow-2xl",
+  desktop: "mx-auto my-3 h-[calc(100vh-1.5rem)] w-[1180px] max-w-[calc(100vw-1.5rem)] rounded-xl border-4 border-border shadow-2xl",
+};
 
 const Index = () => {
   const { user, profile, loading, needsCaptcha, signInWithCaptcha, setNickname, startOver } = useAuth();
@@ -32,18 +41,15 @@ const Index = () => {
   const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
   const [newColor, setNewColor] = useState<NoteColor>(myExtras.favorite_color ?? "yellow");
   const [transform, setTransform] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
-  const [showLaunchEvent, setShowLaunchEvent] = useState(false);
+  const [deviceMode, setDeviceMode] = useState<DeviceMode>(() => {
+    if (typeof window === "undefined") return "auto";
+    return (window.localStorage.getItem("global-wall-device-mode") as DeviceMode | null) ?? "auto";
+  });
   const canvasRef = useRef<InfiniteCanvasHandle>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const key = `global-wall-launch-${APP_VERSION}`;
-    const seen = window.localStorage.getItem(key);
-    if (!seen) {
-      setShowLaunchEvent(true);
-      window.localStorage.setItem(key, "seen");
-    }
-  }, []);
+    window.localStorage.setItem("global-wall-device-mode", deviceMode);
+  }, [deviceMode]);
 
   // Once favorite color loads, prefer it as the default new-note color
   useEffect(() => {
@@ -195,13 +201,8 @@ const Index = () => {
   const screenToWorld = (cx: number, cy: number) =>
     canvasRef.current?.screenToWorld(cx, cy) ?? { x: 0, y: 0 };
 
-  if (MAINTENANCE_MODE) return <MaintenanceScreen />;
-
   return (
-    <div className="relative h-screen w-screen overflow-hidden">
-      {showLaunchEvent && (
-        <MaintenanceScreen dismissLabel="Drop me in" onDismiss={() => setShowLaunchEvent(false)} />
-      )}
+    <div className={cn("relative overflow-hidden bg-background", DEVICE_FRAME_CLASS[deviceMode])}>
       <InfiniteCanvas ref={canvasRef} onTransformChange={setTransform}>
         {notes.map((n) => (
           <StickyNote
@@ -254,9 +255,18 @@ const Index = () => {
             value={newColor}
             onChange={setNewColor}
             favoriteColor={myExtras.favorite_color ?? null}
+            favoriteColors={myExtras.favorite_colors}
             onSetFavorite={async (c) => { await myExtras.save({ favorite_color: c }); }}
+            onToggleFavorite={async (c) => {
+              const set = new Set(myExtras.favorite_colors);
+              if (set.has(c)) set.delete(c);
+              else set.add(c);
+              await myExtras.save({ favorite_colors: Array.from(set), favorite_color: c });
+            }}
           />
         }
+        deviceMode={deviceMode}
+        onDeviceModeChange={setDeviceMode}
         onDeleteAllMine={deleteAllMine}
       />
 

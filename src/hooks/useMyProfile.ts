@@ -6,21 +6,22 @@ export interface MyProfileExtras {
   bio: string;
   avatar_key: string;
   favorite_color: string | null;
+  favorite_colors: string[];
 }
 
 export function useMyProfile(userId: string | null) {
-  const [extras, setExtras] = useState<MyProfileExtras>({ bio: "", avatar_key: "sparkle", favorite_color: null });
+  const [extras, setExtras] = useState<MyProfileExtras>({ bio: "", avatar_key: "sparkle", favorite_color: null, favorite_colors: [] });
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!userId) {
-      setExtras({ bio: "", avatar_key: "sparkle", favorite_color: null });
+      setExtras({ bio: "", avatar_key: "sparkle", favorite_color: null, favorite_colors: [] });
       setLoading(false);
       return;
     }
     const { data } = await supabase
       .from("user_profiles")
-      .select("bio, avatar_key, favorite_color")
+      .select("bio, avatar_key, favorite_color, favorite_colors")
       .eq("user_id", userId)
       .maybeSingle();
     if (data) {
@@ -28,9 +29,10 @@ export function useMyProfile(userId: string | null) {
         bio: (data as any).bio ?? "",
         avatar_key: (data as any).avatar_key ?? "sparkle",
         favorite_color: (data as any).favorite_color ?? null,
+        favorite_colors: (data as any).favorite_colors ?? [],
       });
     } else {
-      setExtras({ bio: "", avatar_key: "sparkle", favorite_color: null });
+      setExtras({ bio: "", avatar_key: "sparkle", favorite_color: null, favorite_colors: [] });
     }
     setLoading(false);
   }, [userId]);

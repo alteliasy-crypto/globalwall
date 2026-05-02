@@ -6,16 +6,20 @@ import { Palette, Check, Star } from "lucide-react";
 import { NOTE_COLORS, NoteColor, colorStyle } from "@/lib/noteColors";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Props {
   value: NoteColor;
   onChange: (c: NoteColor) => void;
   favoriteColor?: NoteColor | null;
+  favoriteColors?: NoteColor[];
   onSetFavorite?: (c: NoteColor) => void | Promise<void>;
+  onToggleFavorite?: (c: NoteColor) => void | Promise<void>;
+  compact?: boolean;
 }
 
 /** Full-page color palette: 264 colors grouped by family, with a Favorite Color slot. */
-export const ColorPalettePanel = ({ value, onChange, favoriteColor, onSetFavorite }: Props) => {
+export const ColorPalettePanel = ({ value, onChange, favoriteColor, favoriteColors = [], onSetFavorite, onToggleFavorite, compact = false }: Props) => {
   const [query, setQuery] = useState("");
   const families = useMemo(() => {
     const map = new Map<string, typeof NOTE_COLORS>();
@@ -37,16 +41,25 @@ export const ColorPalettePanel = ({ value, onChange, favoriteColor, onSetFavorit
     if (favoriteColor) onChange(favoriteColor);
   };
 
+  const toggleFav = async (color: NoteColor) => {
+    if (!onToggleFavorite) return;
+    await onToggleFavorite(color);
+    toast.success(favoriteColors.includes(color) ? "Removed from favorites" : "Added to favorites ⭐");
+  };
+
+  const favoriteSet = new Set(favoriteColors);
+  const favoriteDefs = NOTE_COLORS.filter((c) => favoriteSet.has(c.id));
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5 rounded-full" title="All colors">
+        <Button variant="outline" size={compact ? "icon" : "sm"} className={cn("rounded-full", !compact && "gap-1.5")} title="All colors">
           <Palette className="h-4 w-4" />
           <span
-            className="h-3 w-3 rounded-full border border-foreground/20"
+            className={cn("rounded-full border border-foreground/20", compact ? "h-2.5 w-2.5" : "h-3 w-3")}
             style={colorStyle(value)}
           />
-          <span className="hidden font-handwritten text-base sm:inline">Colors</span>
+          {!compact && <span className="hidden font-handwritten text-base sm:inline">Colors</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="h-[92vh] max-h-[92vh] w-[95vw] max-w-[1400px] overflow-hidden p-0 flex flex-col">
@@ -86,42 +99,76 @@ export const ColorPalettePanel = ({ value, onChange, favoriteColor, onSetFavorit
             </div>
           </div>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto p-4 space-y-5">
-          {families.map(([family, colors]) => (
-            <div key={family}>
-              <h3 className="mb-2 font-handwritten text-xl font-bold text-foreground/80">{family}</h3>
-              <div className="grid grid-cols-7 gap-2 sm:grid-cols-10 md:grid-cols-14 lg:grid-cols-[repeat(18,minmax(0,1fr))]">
-                {colors.map((c) => {
-                  const selected = value === c.id;
-                  const isFav = favoriteColor === c.id;
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => onChange(c.id)}
-                      title={c.label}
-                      style={colorStyle(c.id)}
-                      className={cn(
-                        "relative aspect-square rounded-lg border border-foreground/10 transition-transform hover:scale-110",
-                        selected && "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110"
-                      )}
-                    >
-                      {selected && (
-                        <Check className="absolute inset-0 m-auto h-4 w-4 text-foreground/80 drop-shadow" />
-                      )}
-                      {isFav && !selected && (
-                        <Star className="absolute right-0.5 top-0.5 h-3 w-3 fill-amber-400 text-amber-500 drop-shadow" />
-                      )}
-                    </button>
-                  );
-                })}
+        <Tabs defaultValue="all" className="flex min-h-0 flex-1 flex-col">
+          <div className="border-b border-border/40 px-4 py-2">
+            <TabsList>
+              <TabsTrigger value="all">All colors</TabsTrigger>
+              <TabsTrigger value="favorites">Favorites ({favoriteDefs.length})</TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="all" className="min-h-0 flex-1 overflow-y-auto p-4 space-y-5">
+            {families.map(([family, colors]) => (
+              <div key={family}>
+                <h3 className="mb-2 font-handwritten text-xl font-bold text-foreground/80">{family}</h3>
+                <div className="grid grid-cols-7 gap-2 sm:grid-cols-10 md:grid-cols-14 lg:grid-cols-[repeat(18,minmax(0,1fr))]">
+                  {colors.map((c) => {
+                    const selected = value === c.id;
+                    const isFav = favoriteSet.has(c.id);
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => onChange(c.id)}
+                        onDoubleClick={() => toggleFav(c.id)}
+                        title={`${c.label} · double-click to favorite`}
+                        style={colorStyle(c.id)}
+                        className={cn(
+                          "relative aspect-square rounded-lg border border-foreground/10 transition-transform hover:scale-110",
+                          selected && "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110"
+                        )}
+                      >
+                        {selected && (
+                          <Check className="absolute inset-0 m-auto h-4 w-4 text-foreground/80 drop-shadow" />
+                        )}
+                        {isFav && (
+                          <Star className="absolute right-0.5 top-0.5 h-3 w-3 fill-amber-400 text-amber-500 drop-shadow" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
-          {families.length === 0 && (
-            <p className="py-12 text-center text-muted-foreground">No colors match "{query}"</p>
-          )}
-        </div>
+            ))}
+            {families.length === 0 && (
+              <p className="py-12 text-center text-muted-foreground">No colors match "{query}"</p>
+            )}
+          </TabsContent>
+          <TabsContent value="favorites" className="min-h-0 flex-1 overflow-y-auto p-4">
+            {favoriteDefs.length === 0 ? (
+              <p className="py-12 text-center font-handwritten text-xl text-muted-foreground">no favorite colors yet</p>
+            ) : (
+              <div className="grid grid-cols-7 gap-2 sm:grid-cols-10 md:grid-cols-14 lg:grid-cols-[repeat(18,minmax(0,1fr))]">
+                {favoriteDefs.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => onChange(c.id)}
+                    onDoubleClick={() => toggleFav(c.id)}
+                    title={`${c.label} · double-click to remove`}
+                    style={colorStyle(c.id)}
+                    className={cn(
+                      "relative aspect-square rounded-lg border border-foreground/10 transition-transform hover:scale-110",
+                      value === c.id && "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110"
+                    )}
+                  >
+                    <Star className="absolute right-0.5 top-0.5 h-3 w-3 fill-amber-400 text-amber-500 drop-shadow" />
+                    {value === c.id && <Check className="absolute inset-0 m-auto h-4 w-4 text-foreground/80 drop-shadow" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
