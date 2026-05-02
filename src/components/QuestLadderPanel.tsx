@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { Flame, Coins, Gem, Zap, Trophy, Share2, Sparkles } from "lucide-react";
+import { Flame, Coins, Gem, Zap, Trophy, Sparkles } from "lucide-react";
 import { useQuests, type Quest } from "@/hooks/useQuests";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -49,19 +49,6 @@ export const QuestLadderPanel = ({ userId }: Props) => {
       `+${r.coins_awarded} 🪙${r.tokens_awarded ? ` · +${r.tokens_awarded} 💎` : ""} · x${Number(r.multiplier).toFixed(2)}`,
       { description: `Heat streak: ${r.heat_streak}🔥 · New quest unlocked!` }
     );
-  };
-
-  const handleShare = async () => {
-    const rewards = ["Mystery confetti ✨", "Rare cork aura 🪩", "Lucky streak charm 🍀", "Hype wave 🌊", "Golden pin 📌"];
-    const reward = rewards[Math.floor(Math.random() * rewards.length)];
-    try {
-      const shareData = { title: "Global Wall", text: "Pin something on Global Wall — chaotic, social, addictive.", url: window.location.origin };
-      if (navigator.share) await navigator.share(shareData);
-      else await navigator.clipboard.writeText(window.location.origin);
-      toast.success(`Shared! Reward: ${reward}`);
-    } catch {
-      toast.info("Share canceled — try again next time.");
-    }
   };
 
   const readyCount = quests.filter((q) => q.progress >= q.target).length;
