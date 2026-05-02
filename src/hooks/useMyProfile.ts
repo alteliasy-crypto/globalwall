@@ -5,27 +5,32 @@ import { notifyDailyTaskRefresh } from "./useProgress";
 export interface MyProfileExtras {
   bio: string;
   avatar_key: string;
+  favorite_color: string | null;
 }
 
 export function useMyProfile(userId: string | null) {
-  const [extras, setExtras] = useState<MyProfileExtras>({ bio: "", avatar_key: "sparkle" });
+  const [extras, setExtras] = useState<MyProfileExtras>({ bio: "", avatar_key: "sparkle", favorite_color: null });
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!userId) {
-      setExtras({ bio: "", avatar_key: "sparkle" });
+      setExtras({ bio: "", avatar_key: "sparkle", favorite_color: null });
       setLoading(false);
       return;
     }
     const { data } = await supabase
       .from("user_profiles")
-      .select("bio, avatar_key")
+      .select("bio, avatar_key, favorite_color")
       .eq("user_id", userId)
       .maybeSingle();
     if (data) {
-      setExtras({ bio: data.bio ?? "", avatar_key: data.avatar_key ?? "sparkle" });
+      setExtras({
+        bio: (data as any).bio ?? "",
+        avatar_key: (data as any).avatar_key ?? "sparkle",
+        favorite_color: (data as any).favorite_color ?? null,
+      });
     } else {
-      setExtras({ bio: "", avatar_key: "sparkle" });
+      setExtras({ bio: "", avatar_key: "sparkle", favorite_color: null });
     }
     setLoading(false);
   }, [userId]);
@@ -37,7 +42,7 @@ export function useMyProfile(userId: string | null) {
     const next = { ...extras, ...patch };
     const { error } = await supabase
       .from("user_profiles")
-      .upsert({ user_id: userId, ...next }, { onConflict: "user_id" });
+      .upsert({ user_id: userId, ...next } as any, { onConflict: "user_id" });
     if (!error) {
       setExtras(next);
       if (typeof patch.bio === "string") notifyDailyTaskRefresh("daily-task:bio-updated");
