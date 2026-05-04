@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { NoteColor } from "@/lib/noteColors";
-import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon, Settings } from "lucide-react";
+import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon, Settings as SettingsIcon, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { APP_VERSION, DEV_NOTES } from "@/lib/version";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Avatar } from "./Avatar";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Props {
   userId: string | null;
@@ -42,49 +45,128 @@ interface Props {
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
   colorsSlot?: React.ReactNode;
-  deviceMode?: "auto" | "phone" | "tablet" | "desktop";
-  onDeviceModeChange?: (mode: "auto" | "phone" | "tablet" | "desktop") => void;
+  // Kept for backward compat — unused
+  deviceMode?: any;
+  onDeviceModeChange?: any;
 }
 
+const THEME_PRESETS: { key: string; label: string; preview: string; locked?: boolean }[] = [
+  { key: "default", label: "Cork Classic", preview: "from-amber-300 to-amber-600" },
+  { key: "pastel", label: "Pastel Dream", preview: "from-pink-300 to-purple-400" },
+  { key: "neon", label: "Neon Pulse", preview: "from-cyan-400 to-fuchsia-500" },
+  { key: "midnight", label: "Midnight Ink", preview: "from-slate-700 to-indigo-900" },
+  { key: "sunset", label: "Sunset", preview: "from-orange-400 to-rose-500" },
+  { key: "forest", label: "Forest Mist", preview: "from-emerald-500 to-teal-700" },
+  { key: "ocean", label: "Ocean Wave", preview: "from-sky-400 to-blue-600" },
+  { key: "lava", label: "Lava Flow", preview: "from-red-500 to-orange-600" },
+  { key: "galaxy", label: "Galaxy Drift", preview: "from-purple-700 to-indigo-900" },
+  { key: "cherry", label: "Cherry Blossom", preview: "from-pink-400 to-rose-300" },
+  { key: "aurora", label: "Aurora", preview: "from-green-400 via-cyan-400 to-purple-500" },
+  { key: "matrix", label: "Matrix", preview: "from-green-600 to-emerald-900" },
+  { key: "candy", label: "Candyland", preview: "from-pink-300 to-yellow-300" },
+  { key: "steel", label: "Steel Forge", preview: "from-zinc-500 to-slate-700" },
+  { key: "gold", label: "Gold Rush", preview: "from-yellow-400 to-amber-600" },
+  { key: "ice", label: "Ice Crystal", preview: "from-cyan-300 to-blue-400" },
+  { key: "volcano", label: "Volcano", preview: "from-red-700 to-yellow-500" },
+  { key: "meadow", label: "Meadow", preview: "from-lime-400 to-green-500" },
+  { key: "void", label: "The Void", preview: "from-black to-zinc-900" },
+  { key: "rainbow", label: "Rainbow Wall", preview: "from-red-500 via-yellow-400 to-purple-500" },
+];
+
 export const Toolbar = ({
-  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote, onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot, marketSlot, leaderboardSlot, colorsSlot, deviceMode = "auto", onDeviceModeChange,
+  userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote,
+  onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot,
+  marketSlot, leaderboardSlot, colorsSlot,
 }: Props) => {
+  const [currentTheme, setCurrentTheme] = useState<string>("default");
+  const [ownedThemes, setOwnedThemes] = useState<Set<string>>(new Set(["default"]));
+
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      const [{ data: prof }, { data: cos }] = await Promise.all([
+        supabase.from("user_profiles").select("theme").eq("user_id", userId).maybeSingle(),
+        supabase.from("cosmetics_owned").select("item_key").eq("user_id", userId),
+      ]);
+      const t = (prof as any)?.theme ?? "default";
+      setCurrentTheme(t);
+      const owned = new Set<string>(["default"]);
+      for (const r of (cos ?? []) as any[]) {
+        if (typeof r.item_key === "string" && r.item_key.startsWith("theme_")) owned.add(r.item_key.slice(6));
+      }
+      setOwnedThemes(owned);
+    })();
+    const onChange = () => {
+      supabase.from("user_profiles").select("theme").eq("user_id", userId).maybeSingle().then(({ data }) => {
+        if (data) setCurrentTheme((data as any).theme ?? "default");
+      });
+    };
+    window.addEventListener("profile:theme-changed", onChange);
+    return () => window.removeEventListener("profile:theme-changed", onChange);
+  }, [userId]);
+
+  const pickTheme = async (key: string) => {
+    if (!userId) return;
+    if (!ownedThemes.has(key)) {
+      toast.error("Buy this theme in the Wall Market first ✨");
+      return;
+    }
+    const itemKey = key === "default" ? null : `theme_${key}`;
+    const { error } = await (supabase as any).rpc("equip_cosmetic", { _item_key: itemKey });
+    if (error) { toast.error(error.message); return; }
+    setCurrentTheme(key);
+    window.dispatchEvent(new CustomEvent("profile:theme-changed"));
+    toast.success("Theme applied");
+  };
+
   return (
-    <header className="pointer-events-none absolute inset-x-0 top-0 z-30 p-3">
-      <div className="pointer-events-auto mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-2xl border border-border/40 bg-background/80 px-4 py-2.5 shadow-lg backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <h1 className="font-handwritten text-2xl font-bold leading-none">Global Wall</h1>
-          <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
-            {APP_VERSION}
-          </span>
-          <span className="hidden text-xs text-muted-foreground sm:inline">
-            · {totalCount} note{totalCount === 1 ? "" : "s"} live
-          </span>
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-30 p-3">
+      <div className="pointer-events-auto mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 rounded-3xl border border-border/40 bg-background/70 px-3 py-2 shadow-xl backdrop-blur-xl">
+        {/* Brand */}
+        <div className="flex items-center gap-2 pl-1">
+          <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-md">
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <div className="leading-tight">
+            <h1 className="font-handwritten text-xl font-bold">Global Wall</h1>
+            <p className="text-[10px] font-bold text-muted-foreground">
+              {APP_VERSION} · {totalCount} live
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {colorsSlot}
-          {leaderboardSlot}
-          {marketSlot}
-          {favoritesSlot}
-          {dailySlot}
-          {inboxSlot}
+        {/* Action chips */}
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          <div className="flex items-center gap-1 rounded-full border border-border/40 bg-muted/40 p-0.5">
+            {colorsSlot}
+            {leaderboardSlot}
+            {marketSlot}
+            {favoritesSlot}
+            {dailySlot}
+            {inboxSlot}
+          </div>
 
-          <Button onClick={onAddNote} disabled={!canAdd} className="gap-1.5 rounded-full" title={`${myCount}/${noteCap} notes this hour`}>
+          <Button
+            onClick={onAddNote}
+            disabled={!canAdd}
+            className="h-9 gap-1.5 rounded-full bg-gradient-to-r from-primary to-accent px-3 shadow-md hover:shadow-lg"
+            title={`${myCount}/${noteCap} notes this hour`}
+          >
             <Plus className="h-4 w-4" />
             <span className="font-handwritten text-base">Add note</span>
-            <span className="ml-1 rounded-full bg-primary-foreground/20 px-1.5 text-xs">{myCount}/{noteCap}</span>
+            <span className="ml-1 rounded-full bg-primary-foreground/25 px-1.5 text-[11px] font-bold tabular-nums">
+              {myCount}/{noteCap}
+            </span>
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5 rounded-full pl-1 pr-3">
+              <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-full border-border/50 pl-1 pr-3">
                 <Avatar avatarKey={avatarKey} size="sm" />
-                <span className="font-handwritten text-base">{nickname ?? "..."}</span>
+                <span className="font-handwritten text-base max-w-[120px] truncate">{nickname ?? "..."}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="font-handwritten text-base">
                 Hi, {nickname ?? "friend"}!
               </DropdownMenuLabel>
@@ -99,36 +181,53 @@ export const Toolbar = ({
               <DropdownMenuItem onClick={onEditProfile}>
                 <UserIcon className="mr-2 h-4 w-4" /> Edit profile
               </DropdownMenuItem>
+
+              {/* Settings dialog */}
               <Dialog>
                 <DialogTrigger asChild>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Settings className="mr-2 h-4 w-4" /> Settings
+                    <SettingsIcon className="mr-2 h-4 w-4" /> Settings
                   </DropdownMenuItem>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-2xl">
                   <DialogHeader>
                     <DialogTitle className="font-handwritten text-3xl">Settings</DialogTitle>
                     <DialogDescription className="font-note text-base">
-                      Choose the preview frame for this device.
+                      Pick a theme. Locked themes unlock in the Wall Market.
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-muted-foreground">Device chooser</label>
-                    <Select value={deviceMode} onValueChange={(v) => onDeviceModeChange?.(v as "auto" | "phone" | "tablet" | "desktop")}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Auto" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="auto">Auto / full screen</SelectItem>
-                        <SelectItem value="phone">Phone frame</SelectItem>
-                        <SelectItem value="tablet">Tablet frame</SelectItem>
-                        <SelectItem value="desktop">Desktop frame</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div>
+                    <h3 className="mb-2 font-handwritten text-xl">Theme</h3>
+                    <div className="grid max-h-[60vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3">
+                      {THEME_PRESETS.map((t) => {
+                        const owned = ownedThemes.has(t.key);
+                        const active = currentTheme === t.key;
+                        return (
+                          <button
+                            key={t.key}
+                            onClick={() => pickTheme(t.key)}
+                            className={cn(
+                              "group relative flex flex-col items-stretch rounded-xl border border-border/40 p-1 text-left transition-all hover:-translate-y-0.5 hover:shadow-md",
+                              active && "ring-2 ring-primary",
+                              !owned && "opacity-60",
+                            )}
+                          >
+                            <div className={cn("h-14 rounded-lg bg-gradient-to-br", t.preview)} />
+                            <div className="flex items-center justify-between px-1.5 pt-1">
+                              <span className="font-handwritten text-sm font-bold leading-tight">{t.label}</span>
+                              {active && <Check className="h-3.5 w-3.5 text-primary" />}
+                              {!owned && !active && <span className="text-[9px] font-bold uppercase text-muted-foreground">Locked</span>}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </DialogContent>
               </Dialog>
+
               <DropdownMenuSeparator />
+
               <Dialog>
                 <DialogTrigger asChild>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -140,16 +239,17 @@ export const Toolbar = ({
                     <DialogTitle className="font-handwritten text-3xl">How the wall works</DialogTitle>
                     <DialogDescription className="font-note text-base">
                       <ul className="mt-2 space-y-2 text-foreground">
-                        <li>📌 Drop up to <b>15 sticky notes per hour</b> on the global cork board (more as you complete quests).</li>
+                        <li>📌 Drop up to <b>15 sticky notes per hour</b> (more as you complete quests).</li>
                         <li>🎨 Pick a color and write up to 140 characters.</li>
                         <li>✋ <b>Drag</b> your own notes anywhere. <b>Double-click</b> to edit.</li>
-                        <li>🌍 Everything is <b>live</b> — refresh-free, see updates instantly.</li>
+                        <li>🌍 Everything is <b>live</b> — refresh-free.</li>
                         <li>🚩 Report rule-breakers. 5 reports = banned forever.</li>
                       </ul>
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
+
               <Dialog>
                 <DialogTrigger asChild>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -178,6 +278,7 @@ export const Toolbar = ({
                   </div>
                 </DialogContent>
               </Dialog>
+
               {myCount > 0 && (
                 <DropdownMenuItem onClick={onDeleteAllMine} className="text-destructive">
                   <Trash2 className="mr-2 h-4 w-4" /> Delete all my notes
