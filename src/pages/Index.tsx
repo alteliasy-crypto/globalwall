@@ -199,7 +199,7 @@ const Index = () => {
     canvasRef.current?.screenToWorld(cx, cy) ?? { x: 0, y: 0 };
 
   return (
-    <div className={cn("relative overflow-hidden bg-background", DEVICE_FRAME_CLASS[deviceMode])}>
+    <div className={cn("relative h-screen w-screen overflow-hidden bg-background", `theme-${theme}`)}>
       <InfiniteCanvas ref={canvasRef} onTransformChange={setTransform}>
         {notes.map((n) => (
           <StickyNote
