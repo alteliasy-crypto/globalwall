@@ -362,6 +362,48 @@ export type Database = {
           },
         ]
       }
+      shop_catalog: {
+        Row: {
+          accent: string
+          category: string
+          coins: number
+          created_at: string
+          description: string
+          item_key: string
+          label: string
+          meta: Json
+          rarity: string
+          tokens: number
+          type: string
+        }
+        Insert: {
+          accent?: string
+          category: string
+          coins?: number
+          created_at?: string
+          description?: string
+          item_key: string
+          label: string
+          meta?: Json
+          rarity?: string
+          tokens?: number
+          type: string
+        }
+        Update: {
+          accent?: string
+          category?: string
+          coins?: number
+          created_at?: string
+          description?: string
+          item_key?: string
+          label?: string
+          meta?: Json
+          rarity?: string
+          tokens?: number
+          type?: string
+        }
+        Relationships: []
+      }
       user_currency: {
         Row: {
           best_streak: number
@@ -406,8 +448,13 @@ export type Database = {
           avatar_key: string
           bio: string
           created_at: string
+          equipped_badge: string | null
+          equipped_font: string | null
+          equipped_frame: string | null
+          equipped_fx: string | null
           favorite_color: string | null
           favorite_colors: string[]
+          theme: string
           updated_at: string
           user_id: string
         }
@@ -415,8 +462,13 @@ export type Database = {
           avatar_key?: string
           bio?: string
           created_at?: string
+          equipped_badge?: string | null
+          equipped_font?: string | null
+          equipped_frame?: string | null
+          equipped_fx?: string | null
           favorite_color?: string | null
           favorite_colors?: string[]
+          theme?: string
           updated_at?: string
           user_id: string
         }
@@ -424,8 +476,13 @@ export type Database = {
           avatar_key?: string
           bio?: string
           created_at?: string
+          equipped_badge?: string | null
+          equipped_font?: string | null
+          equipped_frame?: string | null
+          equipped_fx?: string | null
           favorite_color?: string | null
           favorite_colors?: string[]
+          theme?: string
           updated_at?: string
           user_id?: string
         }
@@ -519,6 +576,13 @@ export type Database = {
           total_tokens: number
         }[]
       }
+      equip_cosmetic: {
+        Args: { _item_key: string }
+        Returns: {
+          message: string
+          success: boolean
+        }[]
+      }
       get_my_wallet: {
         Args: never
         Returns: {
@@ -569,6 +633,22 @@ export type Database = {
           reports_made: number
           user_id: string
           warnings: number
+        }[]
+      }
+      get_shop_rotation: {
+        Args: never
+        Returns: {
+          accent: string
+          category: string
+          coins: number
+          description: string
+          item_key: string
+          label: string
+          meta: Json
+          rarity: string
+          rotates_at: string
+          tokens: number
+          type: string
         }[]
       }
       get_wall_street_rankings: {
