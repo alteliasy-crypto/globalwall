@@ -262,8 +262,6 @@ const Index = () => {
             }}
           />
         }
-        deviceMode={deviceMode}
-        onDeviceModeChange={setDeviceMode}
         onDeleteAllMine={deleteAllMine}
       />
 
