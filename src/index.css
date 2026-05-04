@@ -66,6 +66,27 @@
     --sidebar-ring: 25 70% 45%;
   }
 
+  /* Theme variants — recolor cork board + accents */
+  .theme-pastel { --cork-base: 320 60% 80%; --cork-dark: 280 50% 60%; --primary: 320 70% 55%; --ring: 320 70% 55%; }
+  .theme-neon { --cork-base: 280 60% 18%; --cork-dark: 290 80% 30%; --primary: 300 100% 65%; --ring: 180 100% 55%; --foreground: 200 80% 95%; }
+  .theme-midnight { --cork-base: 230 35% 18%; --cork-dark: 230 40% 10%; --primary: 230 80% 65%; --foreground: 220 30% 92%; }
+  .theme-sunset { --cork-base: 18 80% 65%; --cork-dark: 350 70% 45%; --primary: 12 85% 55%; }
+  .theme-forest { --cork-base: 150 35% 35%; --cork-dark: 160 45% 22%; --primary: 145 70% 45%; --foreground: 140 20% 95%; }
+  .theme-ocean { --cork-base: 205 60% 50%; --cork-dark: 215 65% 30%; --primary: 200 90% 50%; --foreground: 200 30% 98%; }
+  .theme-lava { --cork-base: 12 75% 45%; --cork-dark: 0 70% 30%; --primary: 25 100% 55%; --foreground: 35 95% 95%; }
+  .theme-galaxy { --cork-base: 260 45% 22%; --cork-dark: 270 55% 12%; --primary: 280 90% 70%; --foreground: 270 30% 95%; }
+  .theme-cherry { --cork-base: 340 75% 80%; --cork-dark: 350 65% 65%; --primary: 340 85% 55%; }
+  .theme-aurora { --cork-base: 180 50% 30%; --cork-dark: 270 60% 25%; --primary: 160 90% 50%; --foreground: 180 30% 95%; }
+  .theme-matrix { --cork-base: 140 60% 12%; --cork-dark: 140 70% 6%; --primary: 130 100% 50%; --foreground: 130 80% 80%; }
+  .theme-candy { --cork-base: 330 80% 85%; --cork-dark: 50 90% 75%; --primary: 330 90% 60%; }
+  .theme-steel { --cork-base: 220 10% 45%; --cork-dark: 220 12% 28%; --primary: 220 30% 60%; --foreground: 220 10% 95%; }
+  .theme-gold { --cork-base: 42 85% 55%; --cork-dark: 35 75% 35%; --primary: 38 95% 50%; }
+  .theme-ice { --cork-base: 200 80% 80%; --cork-dark: 215 70% 60%; --primary: 200 90% 55%; }
+  .theme-volcano { --cork-base: 0 70% 35%; --cork-dark: 15 80% 20%; --primary: 30 100% 55%; --foreground: 30 90% 95%; }
+  .theme-meadow { --cork-base: 90 55% 60%; --cork-dark: 110 50% 35%; --primary: 100 70% 45%; }
+  .theme-void { --cork-base: 0 0% 8%; --cork-dark: 0 0% 4%; --primary: 0 0% 80%; --foreground: 0 0% 95%; }
+  .theme-rainbow { --cork-base: 280 70% 55%; --cork-dark: 200 80% 45%; --primary: 320 90% 60%; --foreground: 0 0% 100%; }
+
   .dark {
     --background: 25 20% 12%;
     --foreground: 35 30% 92%;
