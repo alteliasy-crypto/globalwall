@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v5.1.2";
+export const APP_VERSION = "v5.2.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,19 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v5.2.0",
+    date: "2026-05-04",
+    notes: [
+      "🛠️ Fixed Quest Ladder crash: slot constraint now allows the full 20 slots (was capped at 3)",
+      "🛒 Wall Market overhaul — 120+ items across Themes, Badges, FX, Frames, Fonts, and Boosts",
+      "🔁 New rotating shop: 15 featured items refresh every 12 hours, plus a manual refresh button",
+      "🎒 Purchases now actually appear — equip themes/badges/FX/frames/fonts and see them in your inventory tab",
+      "🎨 Theme chooser added to Settings — 20 unlockable themes recolor the whole wall live",
+      "✨ Cleaner toolbar: gradient brand mark, grouped action chips, modern glass styling",
+      "🧹 Removed the device picker from Settings",
+    ],
+  },
   {
     version: "v5.1.2",
     date: "2026-05-02",

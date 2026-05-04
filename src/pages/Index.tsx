@@ -23,15 +23,6 @@ import { Locate, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type DeviceMode = "auto" | "phone" | "tablet" | "desktop";
-
-const DEVICE_FRAME_CLASS: Record<DeviceMode, string> = {
-  auto: "h-screen w-screen",
-  phone: "mx-auto my-3 h-[calc(100vh-1.5rem)] w-[390px] max-w-[calc(100vw-1.5rem)] rounded-[2rem] border-4 border-border shadow-2xl",
-  tablet: "mx-auto my-3 h-[calc(100vh-1.5rem)] w-[820px] max-w-[calc(100vw-1.5rem)] rounded-[1.5rem] border-4 border-border shadow-2xl",
-  desktop: "mx-auto my-3 h-[calc(100vh-1.5rem)] w-[1180px] max-w-[calc(100vw-1.5rem)] rounded-xl border-4 border-border shadow-2xl",
-};
-
 const Index = () => {
   const { user, profile, loading, needsCaptcha, signInWithCaptcha, setNickname, startOver } = useAuth();
   const myExtras = useMyProfile(user?.id ?? null);
@@ -41,15 +32,21 @@ const Index = () => {
   const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
   const [newColor, setNewColor] = useState<NoteColor>(myExtras.favorite_color ?? "yellow");
   const [transform, setTransform] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
-  const [deviceMode, setDeviceMode] = useState<DeviceMode>(() => {
-    if (typeof window === "undefined") return "auto";
-    return (window.localStorage.getItem("global-wall-device-mode") as DeviceMode | null) ?? "auto";
-  });
+  const [theme, setTheme] = useState<string>("default");
   const canvasRef = useRef<InfiniteCanvasHandle>(null);
 
+  // Load + react to theme changes
   useEffect(() => {
-    window.localStorage.setItem("global-wall-device-mode", deviceMode);
-  }, [deviceMode]);
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase.from("user_profiles").select("theme").eq("user_id", user.id).maybeSingle();
+      setTheme(((data as any)?.theme as string) ?? "default");
+    };
+    void load();
+    const onChange = () => void load();
+    window.addEventListener("profile:theme-changed", onChange);
+    return () => window.removeEventListener("profile:theme-changed", onChange);
+  }, [user]);
 
   // Once favorite color loads, prefer it as the default new-note color
   useEffect(() => {
@@ -202,7 +199,7 @@ const Index = () => {
     canvasRef.current?.screenToWorld(cx, cy) ?? { x: 0, y: 0 };
 
   return (
-    <div className={cn("relative overflow-hidden bg-background", DEVICE_FRAME_CLASS[deviceMode])}>
+    <div className={cn("relative h-screen w-screen overflow-hidden bg-background", `theme-${theme}`)}>
       <InfiniteCanvas ref={canvasRef} onTransformChange={setTransform}>
         {notes.map((n) => (
           <StickyNote
@@ -265,8 +262,6 @@ const Index = () => {
             }}
           />
         }
-        deviceMode={deviceMode}
-        onDeviceModeChange={setDeviceMode}
         onDeleteAllMine={deleteAllMine}
       />
 
