@@ -1,8 +1,8 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { Flame, Coins, Gem, Zap, Trophy, Sparkles } from "lucide-react";
+import { Flame, Coins, Gem, Zap, Trophy, Sparkles, ArrowUpDown } from "lucide-react";
 import { useQuests, type Quest } from "@/hooks/useQuests";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,7 @@ FireBar.displayName = "FireBar";
 
 export const QuestLadderPanel = ({ userId }: Props) => {
   const { quests, wallet, loading, error, completeQuest } = useQuests(userId);
+  const [sortMode, setSortMode] = useState<"slot" | "fire-desc" | "fire-asc" | "ready">("slot");
   if (!userId) return null;
 
   const heat = wallet?.heat_streak ?? 0;
@@ -52,6 +53,16 @@ export const QuestLadderPanel = ({ userId }: Props) => {
   };
 
   const readyCount = quests.filter((q) => q.progress >= q.target).length;
+  const sortedQuests = [...quests].sort((a, b) => {
+    if (sortMode === "fire-desc") return b.fire_level - a.fire_level || a.slot - b.slot;
+    if (sortMode === "fire-asc") return a.fire_level - b.fire_level || a.slot - b.slot;
+    if (sortMode === "ready") {
+      const ar = a.progress >= a.target ? 0 : 1;
+      const br = b.progress >= b.target ? 0 : 1;
+      return ar - br || a.slot - b.slot;
+    }
+    return a.slot - b.slot;
+  });
 
   return (
     <Dialog>

@@ -1,29 +1,22 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { NoteColor } from "@/lib/noteColors";
-import { Plus, LogOut, Sparkles, HelpCircle, FileText, Trash2, User as UserIcon, Settings as SettingsIcon, Check } from "lucide-react";
+import { Plus, LogOut, HelpCircle, FileText, Trash2, User as UserIcon, Settings as SettingsIcon, Check, StickyNote, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { APP_VERSION, DEV_NOTES } from "@/lib/version";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar } from "./Avatar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ProfileSearch } from "./ProfileSearch";
 
 interface Props {
   userId: string | null;
@@ -45,13 +38,13 @@ interface Props {
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
   colorsSlot?: React.ReactNode;
-  // Kept for backward compat — unused
   deviceMode?: any;
   onDeviceModeChange?: any;
 }
 
-const THEME_PRESETS: { key: string; label: string; preview: string; locked?: boolean }[] = [
+const THEME_PRESETS: { key: string; label: string; preview: string }[] = [
   { key: "default", label: "Cork Classic", preview: "from-amber-300 to-amber-600" },
+  { key: "matte", label: "Matte Black", preview: "from-zinc-900 to-black" },
   { key: "pastel", label: "Pastel Dream", preview: "from-pink-300 to-purple-400" },
   { key: "neon", label: "Neon Pulse", preview: "from-cyan-400 to-fuchsia-500" },
   { key: "midnight", label: "Midnight Ink", preview: "from-slate-700 to-indigo-900" },
@@ -73,13 +66,16 @@ const THEME_PRESETS: { key: string; label: string; preview: string; locked?: boo
   { key: "rainbow", label: "Rainbow Wall", preview: "from-red-500 via-yellow-400 to-purple-500" },
 ];
 
+// Themes everyone has access to (free)
+const FREE_THEMES = new Set(["default", "matte", "void"]);
+
 export const Toolbar = ({
   userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote,
   onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot,
   marketSlot, leaderboardSlot, colorsSlot,
 }: Props) => {
   const [currentTheme, setCurrentTheme] = useState<string>("default");
-  const [ownedThemes, setOwnedThemes] = useState<Set<string>>(new Set(["default"]));
+  const [ownedThemes, setOwnedThemes] = useState<Set<string>>(new Set(FREE_THEMES));
 
   useEffect(() => {
     if (!userId) return;
@@ -90,7 +86,7 @@ export const Toolbar = ({
       ]);
       const t = (prof as any)?.theme ?? "default";
       setCurrentTheme(t);
-      const owned = new Set<string>(["default"]);
+      const owned = new Set<string>(FREE_THEMES);
       for (const r of (cos ?? []) as any[]) {
         if (typeof r.item_key === "string" && r.item_key.startsWith("theme_")) owned.add(r.item_key.slice(6));
       }
@@ -111,21 +107,22 @@ export const Toolbar = ({
       toast.error("Buy this theme in the Wall Market first ✨");
       return;
     }
-    const itemKey = key === "default" ? null : `theme_${key}`;
-    const { error } = await (supabase as any).rpc("equip_cosmetic", { _item_key: itemKey });
+    // Direct upsert — bypasses equip_cosmetic ownership check for default/free themes.
+    const { error } = await supabase
+      .from("user_profiles")
+      .upsert({ user_id: userId, theme: key } as any, { onConflict: "user_id" });
     if (error) { toast.error(error.message); return; }
     setCurrentTheme(key);
     window.dispatchEvent(new CustomEvent("profile:theme-changed"));
-    toast.success("Theme applied");
+    toast.success(`Theme: ${key}`);
   };
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-30 p-3">
       <div className="pointer-events-auto mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 rounded-3xl border border-border/40 bg-background/70 px-3 py-2 shadow-xl backdrop-blur-xl">
-        {/* Brand */}
         <div className="flex items-center gap-2 pl-1">
-          <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-md">
-            <Sparkles className="h-4 w-4" />
+          <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-amber-950 shadow-md rotate-[-6deg]">
+            <StickyNote className="h-4 w-4" />
           </div>
           <div className="leading-tight">
             <h1 className="font-handwritten text-xl font-bold">Global Wall</h1>
@@ -135,7 +132,6 @@ export const Toolbar = ({
           </div>
         </div>
 
-        {/* Action chips */}
         <div className="flex flex-wrap items-center justify-end gap-1.5">
           <div className="flex items-center gap-1 rounded-full border border-border/40 bg-muted/40 p-0.5">
             {colorsSlot}
@@ -144,6 +140,7 @@ export const Toolbar = ({
             {favoritesSlot}
             {dailySlot}
             {inboxSlot}
+            <ProfileSearch />
           </div>
 
           <Button
@@ -182,47 +179,87 @@ export const Toolbar = ({
                 <UserIcon className="mr-2 h-4 w-4" /> Edit profile
               </DropdownMenuItem>
 
-              {/* Settings dialog */}
               <Dialog>
                 <DialogTrigger asChild>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <SettingsIcon className="mr-2 h-4 w-4" /> Settings
                   </DropdownMenuItem>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
                   <DialogHeader>
                     <DialogTitle className="font-handwritten text-3xl">Settings</DialogTitle>
                     <DialogDescription className="font-note text-base">
-                      Pick a theme. Locked themes unlock in the Wall Market.
+                      Personalize your wall experience.
                     </DialogDescription>
                   </DialogHeader>
-                  <div>
-                    <h3 className="mb-2 font-handwritten text-xl">Theme</h3>
-                    <div className="grid max-h-[60vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3">
-                      {THEME_PRESETS.map((t) => {
-                        const owned = ownedThemes.has(t.key);
-                        const active = currentTheme === t.key;
-                        return (
-                          <button
-                            key={t.key}
-                            onClick={() => pickTheme(t.key)}
-                            className={cn(
-                              "group relative flex flex-col items-stretch rounded-xl border border-border/40 p-1 text-left transition-all hover:-translate-y-0.5 hover:shadow-md",
-                              active && "ring-2 ring-primary",
-                              !owned && "opacity-60",
-                            )}
-                          >
-                            <div className={cn("h-14 rounded-lg bg-gradient-to-br", t.preview)} />
-                            <div className="flex items-center justify-between px-1.5 pt-1">
-                              <span className="font-handwritten text-sm font-bold leading-tight">{t.label}</span>
-                              {active && <Check className="h-3.5 w-3.5 text-primary" />}
-                              {!owned && !active && <span className="text-[9px] font-bold uppercase text-muted-foreground">Locked</span>}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <Tabs defaultValue="theme" className="flex-1 flex flex-col overflow-hidden">
+                    <TabsList className="self-start rounded-full">
+                      <TabsTrigger value="theme" className="rounded-full">🎨 Themes</TabsTrigger>
+                      <TabsTrigger value="account" className="rounded-full">👤 Account</TabsTrigger>
+                      <TabsTrigger value="about" className="rounded-full">ℹ️ About</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="theme" className="flex-1 overflow-y-auto mt-3 pr-1">
+                      <p className="mb-3 text-sm text-muted-foreground">
+                        Click any theme to apply it. Locked themes unlock in the <b>Wall Market</b>.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {THEME_PRESETS.map((t) => {
+                          const owned = ownedThemes.has(t.key);
+                          const active = currentTheme === t.key;
+                          return (
+                            <button
+                              key={t.key}
+                              onClick={() => pickTheme(t.key)}
+                              className={cn(
+                                "group relative flex flex-col items-stretch rounded-xl border border-border/40 p-1 text-left transition-all hover:-translate-y-0.5 hover:shadow-md",
+                                active && "ring-2 ring-primary",
+                                !owned && "opacity-60",
+                              )}
+                            >
+                              <div className={cn("h-14 rounded-lg bg-gradient-to-br", t.preview)} />
+                              <div className="flex items-center justify-between px-1.5 pt-1">
+                                <span className="font-handwritten text-sm font-bold leading-tight">{t.label}</span>
+                                {active && <Check className="h-3.5 w-3.5 text-primary" />}
+                                {!owned && !active && <span className="text-[9px] font-bold uppercase text-muted-foreground">Locked</span>}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="account" className="flex-1 overflow-y-auto mt-3 space-y-3">
+                      <div className="rounded-xl border border-border/40 p-3">
+                        <h4 className="font-handwritten text-xl">Profile</h4>
+                        <p className="text-sm text-muted-foreground">Edit your nickname, avatar and bio.</p>
+                        <Button size="sm" className="mt-2" onClick={onEditProfile}>Open editor</Button>
+                      </div>
+                      <div className="rounded-xl border border-destructive/40 p-3">
+                        <h4 className="font-handwritten text-xl text-destructive">Danger zone</h4>
+                        <p className="text-sm text-muted-foreground">These actions can't be undone.</p>
+                        {myCount > 0 && (
+                          <Button size="sm" variant="destructive" className="mt-2 mr-2" onClick={onDeleteAllMine}>
+                            Delete all my notes
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline" className="mt-2" onClick={onSignOut}>
+                          Sign out / Start over
+                        </Button>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="about" className="flex-1 overflow-y-auto mt-3 space-y-2">
+                      <p className="font-handwritten text-2xl">Global Wall {APP_VERSION}</p>
+                      <ul className="mt-2 space-y-2 text-sm">
+                        <li>📌 15 sticky notes per hour (more from quests)</li>
+                        <li>🪜 30 active quests, 3 per fire level</li>
+                        <li>🛒 Rotating shop refreshes every 6 hours</li>
+                        <li>💬 Comment + react on notes</li>
+                        <li>🚩 5 reports = author banned</li>
+                      </ul>
+                    </TabsContent>
+                  </Tabs>
                 </DialogContent>
               </Dialog>
 

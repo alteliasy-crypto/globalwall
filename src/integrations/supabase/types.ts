@@ -116,6 +116,30 @@ export type Database = {
         }
         Relationships: []
       }
+      note_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          note_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          note_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          note_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       note_favorites: {
         Row: {
           created_at: string
@@ -404,6 +428,24 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_rotation_history: {
+        Row: {
+          bucket: number
+          created_at: string
+          item_keys: string[]
+        }
+        Insert: {
+          bucket: number
+          created_at?: string
+          item_keys: string[]
+        }
+        Update: {
+          bucket?: number
+          created_at?: string
+          item_keys?: string[]
+        }
+        Relationships: []
+      }
       user_currency: {
         Row: {
           best_streak: number
@@ -452,6 +494,7 @@ export type Database = {
           equipped_font: string | null
           equipped_frame: string | null
           equipped_fx: string | null
+          equipped_title: string | null
           favorite_color: string | null
           favorite_colors: string[]
           theme: string
@@ -466,6 +509,7 @@ export type Database = {
           equipped_font?: string | null
           equipped_frame?: string | null
           equipped_fx?: string | null
+          equipped_title?: string | null
           favorite_color?: string | null
           favorite_colors?: string[]
           theme?: string
@@ -480,6 +524,7 @@ export type Database = {
           equipped_font?: string | null
           equipped_frame?: string | null
           equipped_fx?: string | null
+          equipped_title?: string | null
           favorite_color?: string | null
           favorite_colors?: string[]
           theme?: string
@@ -624,6 +669,8 @@ export type Database = {
         Returns: {
           avatar_key: string
           bio: string
+          equipped_badge: string
+          equipped_title: string
           follower_count: number
           following_count: number
           is_banned: boolean
@@ -631,6 +678,7 @@ export type Database = {
           nickname: string
           notes_count: number
           reports_made: number
+          theme: string
           user_id: string
           warnings: number
         }[]
@@ -651,6 +699,22 @@ export type Database = {
           type: string
         }[]
       }
+      get_top_notes: {
+        Args: { _limit?: number; _period?: string }
+        Returns: {
+          author_id: string
+          avatar_key: string
+          color: string
+          comment_count: number
+          content: string
+          created_at: string
+          like_count: number
+          nickname: string
+          note_id: string
+          x: number
+          y: number
+        }[]
+      }
       get_wall_street_rankings: {
         Args: { _limit?: number }
         Returns: {
@@ -665,6 +729,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      persist_rotation: { Args: never; Returns: undefined }
       purchase_market_item: {
         Args: { _item_key: string }
         Returns: {
@@ -679,6 +744,19 @@ export type Database = {
         Returns: number
       }
       roll_quest: { Args: { _uid: string }; Returns: Json }
+      roll_quest_at_fire: {
+        Args: { _fire: number; _uid: string }
+        Returns: Json
+      }
+      search_users: {
+        Args: { _limit?: number; _query: string }
+        Returns: {
+          avatar_key: string
+          equipped_title: string
+          nickname: string
+          user_id: string
+        }[]
+      }
       test_function: { Args: never; Returns: undefined }
     }
     Enums: {
