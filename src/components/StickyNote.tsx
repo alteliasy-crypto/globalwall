@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { NoteReactions } from "./NoteReactions";
 import { NoteVotes } from "./NoteVotes";
 import { NoteFavorite } from "./NoteFavorite";
+import { NoteComments } from "./NoteComments";
 import { NicknameLink } from "./NicknameLink";
 import { Avatar } from "./Avatar";
 import {
@@ -175,7 +176,10 @@ export const StickyNote = ({
           </p>
           <div className="mt-1 flex items-center justify-between gap-1 border-t border-foreground/10 pt-1.5">
             <NoteVotes noteId={note.id} userId={currentUserId} isOwner={isOwner} />
-            <NoteFavorite noteId={note.id} userId={currentUserId} />
+            <div className="flex items-center gap-0.5">
+              <NoteComments noteId={note.id} userId={currentUserId} />
+              <NoteFavorite noteId={note.id} userId={currentUserId} />
+            </div>
           </div>
           <div className="pt-1">
             <NoteReactions noteId={note.id} userId={currentUserId} />
