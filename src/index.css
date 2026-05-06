@@ -85,6 +85,17 @@
   .theme-volcano { --cork-base: 0 70% 35%; --cork-dark: 15 80% 20%; --primary: 30 100% 55%; --foreground: 30 90% 95%; }
   .theme-meadow { --cork-base: 90 55% 60%; --cork-dark: 110 50% 35%; --primary: 100 70% 45%; }
   .theme-void { --cork-base: 0 0% 8%; --cork-dark: 0 0% 4%; --primary: 0 0% 80%; --foreground: 0 0% 95%; }
+  .theme-matte {
+    --background: 0 0% 6%; --foreground: 0 0% 92%;
+    --card: 0 0% 9%; --card-foreground: 0 0% 95%;
+    --popover: 0 0% 9%; --popover-foreground: 0 0% 95%;
+    --primary: 0 0% 88%; --primary-foreground: 0 0% 8%;
+    --secondary: 0 0% 14%; --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%; --muted-foreground: 0 0% 65%;
+    --accent: 0 0% 18%; --accent-foreground: 0 0% 95%;
+    --border: 0 0% 18%; --input: 0 0% 16%; --ring: 0 0% 80%;
+    --cork-base: 0 0% 5%; --cork-dark: 0 0% 2%;
+  }
   .theme-rainbow { --cork-base: 280 70% 55%; --cork-dark: 200 80% 45%; --primary: 320 90% 60%; --foreground: 0 0% 100%; }
 
   .dark {
