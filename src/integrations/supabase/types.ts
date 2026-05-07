@@ -598,6 +598,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_xp: { Args: { _uid: string; _xp: number }; Returns: undefined }
       calc_level: { Args: { _xp: number }; Returns: number }
       complete_quest: {
         Args: { _quest_id: string }
@@ -626,6 +627,18 @@ export type Database = {
         Returns: {
           message: string
           success: boolean
+        }[]
+      }
+      get_level_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_key: string
+          equipped_title: string
+          level: number
+          nickname: string
+          rank: number
+          user_id: string
+          xp: number
         }[]
       }
       get_my_wallet: {
