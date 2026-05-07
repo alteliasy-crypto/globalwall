@@ -205,7 +205,7 @@ export const WallMarket = ({ userId }: Props) => {
           <DialogDescription className="font-note text-base flex flex-wrap items-center gap-3">
             <span className="flex items-center gap-1 font-bold text-amber-600"><Coins className="h-4 w-4" />{wallet?.coins ?? 0}</span>
             <span className="flex items-center gap-1 font-bold text-fuchsia-600"><Gem className="h-4 w-4" />{wallet?.tokens ?? 0}</span>
-            <span className="text-muted-foreground">·  120+ items, 15 rotate every 12h</span>
+            <span className="text-muted-foreground">· 540+ items · 25 rotate every 6h · rotation-only purchases</span>
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
@@ -218,6 +218,7 @@ export const WallMarket = ({ userId }: Props) => {
                 <TabsTrigger value="fx" className="rounded-full">FX</TabsTrigger>
                 <TabsTrigger value="frame" className="rounded-full">Frames</TabsTrigger>
                 <TabsTrigger value="font" className="rounded-full">Fonts</TabsTrigger>
+                <TabsTrigger value="title" className="rounded-full">Titles</TabsTrigger>
                 <TabsTrigger value="boost" className="rounded-full">Boosts</TabsTrigger>
                 <TabsTrigger value="owned" className="rounded-full">My Stuff</TabsTrigger>
               </TabsList>
@@ -234,7 +235,7 @@ export const WallMarket = ({ userId }: Props) => {
                   {rotation.map(renderCard)}
                 </div>
               </TabsContent>
-              {(["theme","badge","fx","frame","font","boost"] as const).map((cat) => (
+              {(["theme","badge","fx","frame","font","title","boost"] as const).map((cat) => (
                 <TabsContent key={cat} value={cat} className="m-0">
                   <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                     {allItems.filter((i) => i.category === cat).map(renderCard)}
