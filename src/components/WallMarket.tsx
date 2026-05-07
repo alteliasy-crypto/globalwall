@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingBag, Coins, Gem, Sparkles, Shield, Zap, Palette, Award, Image as FrameIcon, Type, RefreshCw, Check } from "lucide-react";
+import { ShoppingBag, Coins, Gem, Sparkles, Shield, Zap, Palette, Award, Image as FrameIcon, Type, RefreshCw, Check, Crown, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuests, notifyQuestRefresh } from "@/hooks/useQuests";
 import { toast } from "sonner";
@@ -30,7 +30,7 @@ const RARITY_RING: Record<string, string> = {
 };
 
 const CAT_ICON: Record<string, any> = {
-  theme: Palette, badge: Award, fx: Sparkles, frame: FrameIcon, font: Type, boost: Zap,
+  theme: Palette, badge: Award, fx: Sparkles, frame: FrameIcon, font: Type, boost: Zap, title: Crown,
 };
 
 interface Props { userId: string | null }
@@ -40,7 +40,7 @@ export const WallMarket = ({ userId }: Props) => {
   const [busy, setBusy] = useState<string | null>(null);
   const [owned, setOwned] = useState<Set<string>>(new Set());
   const [activeBoosts, setActiveBoosts] = useState<Set<string>>(new Set());
-  const [equipped, setEquipped] = useState<{ theme?: string; badge?: string; fx?: string; frame?: string; font?: string }>({});
+  const [equipped, setEquipped] = useState<{ theme?: string; badge?: string; fx?: string; frame?: string; font?: string; title?: string }>({});
   const [rotation, setRotation] = useState<Item[]>([]);
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [tab, setTab] = useState("rotation");
@@ -53,7 +53,7 @@ export const WallMarket = ({ userId }: Props) => {
     const [{ data: cos }, { data: boosts }, { data: prof }] = await Promise.all([
       supabase.from("cosmetics_owned").select("item_key").eq("user_id", userId),
       supabase.from("active_boosts").select("boost_key").eq("user_id", userId).gt("expires_at", new Date().toISOString()),
-      supabase.from("user_profiles").select("theme, equipped_badge, equipped_fx, equipped_frame, equipped_font").eq("user_id", userId).maybeSingle(),
+      supabase.from("user_profiles").select("theme, equipped_badge, equipped_fx, equipped_frame, equipped_font, equipped_title").eq("user_id", userId).maybeSingle(),
     ]);
     setOwned(new Set((cos ?? []).map((r: any) => r.item_key)));
     setActiveBoosts(new Set((boosts ?? []).map((r: any) => r.boost_key)));
@@ -63,6 +63,7 @@ export const WallMarket = ({ userId }: Props) => {
       fx: (prof as any)?.equipped_fx ?? undefined,
       frame: (prof as any)?.equipped_frame ?? undefined,
       font: (prof as any)?.equipped_font ?? undefined,
+      title: (prof as any)?.equipped_title ?? undefined,
     });
   };
 
