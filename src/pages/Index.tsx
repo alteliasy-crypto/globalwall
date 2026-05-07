@@ -48,6 +48,15 @@ const Index = () => {
     return () => window.removeEventListener("profile:theme-changed", onChange);
   }, [user]);
 
+  // Apply theme class to <html> so portals (dialogs/popovers) inherit too
+  useEffect(() => {
+    const root = document.documentElement;
+    const toRemove: string[] = [];
+    root.classList.forEach((c) => { if (c.startsWith("theme-")) toRemove.push(c); });
+    toRemove.forEach((c) => root.classList.remove(c));
+    root.classList.add(`theme-${theme}`);
+  }, [theme]);
+
   // Once favorite color loads, prefer it as the default new-note color
   useEffect(() => {
     if (myExtras.favorite_color) setNewColor((c) => (c === "yellow" ? myExtras.favorite_color! : c));
