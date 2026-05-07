@@ -29,7 +29,7 @@ const Index = () => {
   const { wallet } = useQuests(user?.id ?? null);
   const [editOpen, setEditOpen] = useState(false);
   const [notes, setNotes] = useState<NoteData[]>([]);
-  const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string }>>({});
+  const [authorMeta, setAuthorMeta] = useState<Record<string, { nickname: string; avatar_key: string; equipped_title?: string | null }>>({});
   const [newColor, setNewColor] = useState<NoteColor>(myExtras.favorite_color ?? "yellow");
   const [transform, setTransform] = useState<ViewTransform>({ x: 0, y: 0, scale: 1 });
   const [theme, setTheme] = useState<string>("default");
@@ -47,6 +47,15 @@ const Index = () => {
     window.addEventListener("profile:theme-changed", onChange);
     return () => window.removeEventListener("profile:theme-changed", onChange);
   }, [user]);
+
+  // Apply theme class to <html> so portals (dialogs/popovers) inherit too
+  useEffect(() => {
+    const root = document.documentElement;
+    const toRemove: string[] = [];
+    root.classList.forEach((c) => { if (c.startsWith("theme-")) toRemove.push(c); });
+    toRemove.forEach((c) => root.classList.remove(c));
+    root.classList.add(`theme-${theme}`);
+  }, [theme]);
 
   // Once favorite color loads, prefer it as the default new-note color
   useEffect(() => {
@@ -69,20 +78,21 @@ const Index = () => {
     })();
   }, [user]);
 
-  // Resolve nicknames + avatars for visible notes
+  // Resolve nicknames + avatars + equipped title for visible notes
   useEffect(() => {
     const missing = Array.from(new Set(notes.map((n) => n.user_id))).filter((id) => !(id in authorMeta));
     if (missing.length === 0) return;
     (async () => {
       const [{ data: nicks }, { data: profs }] = await Promise.all([
         (supabase as any).rpc("get_nicknames", { ids: missing }),
-        supabase.from("user_profiles").select("user_id, avatar_key").in("user_id", missing),
+        supabase.from("user_profiles").select("user_id, avatar_key, equipped_title").in("user_id", missing),
       ]);
-      const profMap = new Map((profs ?? []).map((p: any) => [p.user_id, p.avatar_key]));
+      const profMap = new Map((profs ?? []).map((p: any) => [p.user_id, p]));
       setAuthorMeta((prev) => {
         const next = { ...prev };
         for (const row of (nicks ?? []) as { id: string; nickname: string }[]) {
-          next[row.id] = { nickname: row.nickname, avatar_key: (profMap.get(row.id) as string) ?? "sparkle" };
+          const p: any = profMap.get(row.id) ?? {};
+          next[row.id] = { nickname: row.nickname, avatar_key: p.avatar_key ?? "sparkle", equipped_title: p.equipped_title ?? null };
         }
         return next;
       });
@@ -207,6 +217,7 @@ const Index = () => {
             note={n}
             authorNickname={authorMeta[n.user_id]?.nickname}
             authorAvatarKey={authorMeta[n.user_id]?.avatar_key}
+            authorTitle={authorMeta[n.user_id]?.equipped_title ?? null}
             isOwner={user?.id === n.user_id}
             isAuthed={!!user}
             currentUserId={user?.id ?? null}

@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v5.2.0";
+export const APP_VERSION = "v6.0.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,23 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v6.0.0",
+    date: "2026-05-07",
+    notes: [
+      "🎨 Themes now apply globally — including dialogs, popovers, and the toolbar (was only the canvas before)",
+      "⚫ New Matte Black theme + 20 unlockable themes in Settings → Themes tab",
+      "⚙️ Settings reworked into tabs: Themes / Account / About — device picker removed",
+      "🪜 Quest Ladder: 30 quests (3 per fire level 1–10) + sort by fire/ready button",
+      "🔁 Completing a quest now auto-rerolls a fresh quest at the SAME fire level + awards XP",
+      "🛒 Wall Market: 400+ items, rarity-weighted 25-item rotation every 6h, no-repeat-twice protection",
+      "🏷️ New Titles category — equip a title that shows next to your nickname",
+      "💬 Note comments — reply to any note (280 char limit)",
+      "🔍 Profile search in the toolbar — find any user by nickname",
+      "🛡️ Anti-abuse on reports: 5/24h cap, no duplicates, soft-block for high-warning accounts",
+      "📌 Sticky-note logo replaces the sparkle in the toolbar",
+    ],
+  },
   {
     version: "v5.2.0",
     date: "2026-05-04",

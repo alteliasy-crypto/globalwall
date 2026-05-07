@@ -88,11 +88,21 @@ export const QuestLadderPanel = ({ userId }: Props) => {
           "border-b border-border/50 p-4 transition-colors",
           heat >= 4 ? "bg-gradient-to-br from-primary/15 via-amber-200/30 to-rose-200/20" : "bg-muted/40"
         )}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <DialogTitle className="flex items-center gap-2">
               <Trophy className="h-5 w-5 text-primary" />
               <span className="font-handwritten text-3xl font-bold leading-none">Quest Ladder</span>
             </DialogTitle>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 rounded-full"
+              onClick={() => setSortMode((m) => m === "slot" ? "fire-desc" : m === "fire-desc" ? "fire-asc" : m === "fire-asc" ? "ready" : "slot")}
+              title="Change sort order"
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" />
+              Sort: {sortMode === "slot" ? "Slot" : sortMode === "fire-desc" ? "🔥 High→Low" : sortMode === "fire-asc" ? "🔥 Low→High" : "Ready first"}
+            </Button>
           </div>
           <DialogDescription className="sr-only">Complete quests to earn coins, tokens, and bonus note slots.</DialogDescription>
           <div className="mt-3 grid grid-cols-3 gap-3 text-center">
@@ -137,7 +147,7 @@ export const QuestLadderPanel = ({ userId }: Props) => {
           <div className="mx-auto grid max-w-4xl gap-3 md:grid-cols-3">
             {loading && <p className="text-sm text-muted-foreground">Spinning the ladder…</p>}
             {error && <p className="text-sm text-destructive">{error}</p>}
-            {!loading && quests.map((q) => {
+            {!loading && sortedQuests.map((q) => {
               const ready = q.progress >= q.target;
               return (
                 <div
