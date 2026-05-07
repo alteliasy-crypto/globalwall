@@ -217,6 +217,7 @@ const Index = () => {
             note={n}
             authorNickname={authorMeta[n.user_id]?.nickname}
             authorAvatarKey={authorMeta[n.user_id]?.avatar_key}
+            authorTitle={authorMeta[n.user_id]?.equipped_title ?? null}
             isOwner={user?.id === n.user_id}
             isAuthed={!!user}
             currentUserId={user?.id ?? null}
