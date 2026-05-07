@@ -69,6 +69,12 @@ export const NicknameDialog = ({ open, needsCaptcha, onCaptchaVerified, onSubmit
               onExpire={() => captchaRef.current?.resetCaptcha()}
             />
             {verifying && <p className="font-note text-sm text-muted-foreground">Signing you in…</p>}
+            <button
+              onClick={() => { import("@/lib/guest").then(({ setGuestMode }) => { setGuestMode(true); window.location.reload(); }); }}
+              className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+            >
+              Continue as guest (browse-only — no posting, liking, chat, or shop)
+            </button>
           </div>
         ) : (
           <div className="flex gap-2 pt-2">

@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v6.0.0";
+export const APP_VERSION = "v6.0.1";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,19 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v6.0.1",
+    date: "2026-05-07",
+    notes: [
+      "🐛 Themes finally apply on Equip — `equip_cosmetic` now strips the `theme_` prefix to match the CSS class",
+      "🔒 Wall Market is now rotation-only — non-rotation items show a Locked chip and the Buy button is disabled",
+      "🏷️ Added Titles tab in the shop, plus header copy: 540+ items · 25 rotate every 6h",
+      "🎖️ Equipped badges + titles now render next to nicknames on every sticky note",
+      "🏆 Leaderboards reworked into tabs: Wall Street · Levels (new!) · Top Notes (day/week/month)",
+      "⚡ More XP sources — posting (+5), liking (+2), reacting (+1), favoriting (+1)",
+      "👻 Guest mode — browse-only access from the sign-in screen (no posting/liking/chat/shop)",
+    ],
+  },
   {
     version: "v6.0.0",
     date: "2026-05-07",

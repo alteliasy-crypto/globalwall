@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingBag, Coins, Gem, Sparkles, Shield, Zap, Palette, Award, Image as FrameIcon, Type, RefreshCw, Check } from "lucide-react";
+import { ShoppingBag, Coins, Gem, Sparkles, Shield, Zap, Palette, Award, Image as FrameIcon, Type, RefreshCw, Check, Crown, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuests, notifyQuestRefresh } from "@/hooks/useQuests";
 import { toast } from "sonner";
@@ -30,7 +30,7 @@ const RARITY_RING: Record<string, string> = {
 };
 
 const CAT_ICON: Record<string, any> = {
-  theme: Palette, badge: Award, fx: Sparkles, frame: FrameIcon, font: Type, boost: Zap,
+  theme: Palette, badge: Award, fx: Sparkles, frame: FrameIcon, font: Type, boost: Zap, title: Crown,
 };
 
 interface Props { userId: string | null }
@@ -40,7 +40,7 @@ export const WallMarket = ({ userId }: Props) => {
   const [busy, setBusy] = useState<string | null>(null);
   const [owned, setOwned] = useState<Set<string>>(new Set());
   const [activeBoosts, setActiveBoosts] = useState<Set<string>>(new Set());
-  const [equipped, setEquipped] = useState<{ theme?: string; badge?: string; fx?: string; frame?: string; font?: string }>({});
+  const [equipped, setEquipped] = useState<{ theme?: string; badge?: string; fx?: string; frame?: string; font?: string; title?: string }>({});
   const [rotation, setRotation] = useState<Item[]>([]);
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [tab, setTab] = useState("rotation");
@@ -53,7 +53,7 @@ export const WallMarket = ({ userId }: Props) => {
     const [{ data: cos }, { data: boosts }, { data: prof }] = await Promise.all([
       supabase.from("cosmetics_owned").select("item_key").eq("user_id", userId),
       supabase.from("active_boosts").select("boost_key").eq("user_id", userId).gt("expires_at", new Date().toISOString()),
-      supabase.from("user_profiles").select("theme, equipped_badge, equipped_fx, equipped_frame, equipped_font").eq("user_id", userId).maybeSingle(),
+      supabase.from("user_profiles").select("theme, equipped_badge, equipped_fx, equipped_frame, equipped_font, equipped_title").eq("user_id", userId).maybeSingle(),
     ]);
     setOwned(new Set((cos ?? []).map((r: any) => r.item_key)));
     setActiveBoosts(new Set((boosts ?? []).map((r: any) => r.boost_key)));
@@ -63,6 +63,7 @@ export const WallMarket = ({ userId }: Props) => {
       fx: (prof as any)?.equipped_fx ?? undefined,
       frame: (prof as any)?.equipped_frame ?? undefined,
       font: (prof as any)?.equipped_font ?? undefined,
+      title: (prof as any)?.equipped_title ?? undefined,
     });
   };
 
@@ -114,13 +115,16 @@ export const WallMarket = ({ userId }: Props) => {
   const ownedItems = allItems.filter((i) => owned.has(i.item_key) || activeBoosts.has(i.item_key));
 
   const isEquipped = (it: Item) => {
-    if (it.category === "theme") return equipped.theme === it.item_key;
+    if (it.category === "theme") return equipped.theme === it.item_key.replace(/^theme_/, "");
     if (it.category === "badge") return equipped.badge === it.item_key;
     if (it.category === "fx") return equipped.fx === it.item_key;
     if (it.category === "frame") return equipped.frame === it.item_key;
     if (it.category === "font") return equipped.font === it.item_key;
+    if (it.category === "title") return equipped.title === it.item_key;
     return false;
   };
+
+  const inRotation = useMemo(() => new Set(rotation.map((r) => r.item_key)), [rotation]);
 
   const renderCard = (it: Item) => {
     const Icon = CAT_ICON[it.category] ?? Sparkles;
@@ -128,6 +132,7 @@ export const WallMarket = ({ userId }: Props) => {
     const isActive = it.type === "boost" && activeBoosts.has(it.item_key);
     const canAfford = (wallet?.coins ?? 0) >= it.coins && (wallet?.tokens ?? 0) >= it.tokens;
     const equippedNow = isEquipped(it);
+    const inRot = inRotation.has(it.item_key);
     return (
       <div
         key={it.item_key}
@@ -137,6 +142,11 @@ export const WallMarket = ({ userId }: Props) => {
           !canAfford && !isOwned && !isActive && "opacity-70",
         )}
       >
+        {!inRot && !isOwned && !isActive && (
+          <span className="absolute right-2 top-2 z-10 flex items-center gap-0.5 rounded-full bg-background/80 px-1.5 py-0.5 text-[9px] font-bold uppercase text-muted-foreground backdrop-blur" title="Wait for it to come back into rotation">
+            <Lock className="h-2.5 w-2.5" /> Locked
+          </span>
+        )}
         <div className={cn("mb-3 flex h-20 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-inner", it.accent)}>
           <Icon className="h-9 w-9 drop-shadow" />
         </div>
@@ -168,8 +178,8 @@ export const WallMarket = ({ userId }: Props) => {
               </Button>
             )
           ) : (
-            <Button size="sm" className="h-7 rounded-full" disabled={!canAfford || busy === it.item_key} onClick={() => buy(it)}>
-              {busy === it.item_key ? "..." : "Buy"}
+            <Button size="sm" className="h-7 rounded-full" disabled={!canAfford || !inRot || busy === it.item_key} onClick={() => buy(it)} title={!inRot ? "Only items currently in rotation can be bought" : undefined}>
+              {busy === it.item_key ? "..." : !inRot ? "Locked" : "Buy"}
             </Button>
           )}
         </div>
@@ -195,7 +205,7 @@ export const WallMarket = ({ userId }: Props) => {
           <DialogDescription className="font-note text-base flex flex-wrap items-center gap-3">
             <span className="flex items-center gap-1 font-bold text-amber-600"><Coins className="h-4 w-4" />{wallet?.coins ?? 0}</span>
             <span className="flex items-center gap-1 font-bold text-fuchsia-600"><Gem className="h-4 w-4" />{wallet?.tokens ?? 0}</span>
-            <span className="text-muted-foreground">·  120+ items, 15 rotate every 12h</span>
+            <span className="text-muted-foreground">· 540+ items · 25 rotate every 6h · rotation-only purchases</span>
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
@@ -208,6 +218,7 @@ export const WallMarket = ({ userId }: Props) => {
                 <TabsTrigger value="fx" className="rounded-full">FX</TabsTrigger>
                 <TabsTrigger value="frame" className="rounded-full">Frames</TabsTrigger>
                 <TabsTrigger value="font" className="rounded-full">Fonts</TabsTrigger>
+                <TabsTrigger value="title" className="rounded-full">Titles</TabsTrigger>
                 <TabsTrigger value="boost" className="rounded-full">Boosts</TabsTrigger>
                 <TabsTrigger value="owned" className="rounded-full">My Stuff</TabsTrigger>
               </TabsList>
@@ -224,7 +235,7 @@ export const WallMarket = ({ userId }: Props) => {
                   {rotation.map(renderCard)}
                 </div>
               </TabsContent>
-              {(["theme","badge","fx","frame","font","boost"] as const).map((cat) => (
+              {(["theme","badge","fx","frame","font","title","boost"] as const).map((cat) => (
                 <TabsContent key={cat} value={cat} className="m-0">
                   <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                     {allItems.filter((i) => i.category === cat).map(renderCard)}

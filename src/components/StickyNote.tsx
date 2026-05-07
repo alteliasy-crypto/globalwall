@@ -38,6 +38,7 @@ interface Props {
   authorNickname?: string;
   authorAvatarKey?: string;
   authorTitle?: string | null;
+  authorBadge?: string | null;
   isOwner: boolean;
   isAuthed: boolean;
   currentUserId: string | null;
@@ -57,6 +58,7 @@ export const StickyNote = ({
   authorNickname,
   authorAvatarKey,
   authorTitle,
+  authorBadge,
   isOwner,
   isAuthed,
   currentUserId,
@@ -191,7 +193,7 @@ export const StickyNote = ({
               <Avatar avatarKey={authorAvatarKey} size="xs" />
               <div className="flex flex-col leading-tight">
                 <span className="font-handwritten text-sm opacity-80">
-                  — <NicknameLink userId={note.user_id} nickname={authorNickname} title={authorTitle ?? null} />
+                  — <NicknameLink userId={note.user_id} nickname={authorNickname} title={authorTitle ?? null} badge={authorBadge ?? null} />
                 </span>
                 {dateStr && (
                   <span className="text-[10px] opacity-50">{dateStr}</span>
