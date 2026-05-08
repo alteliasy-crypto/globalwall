@@ -139,6 +139,7 @@ export const Toolbar = ({
             {marketSlot}
             {favoritesSlot}
             {dailySlot}
+            {newsSlot}
             {inboxSlot}
             <ProfileSearch />
           </div>
