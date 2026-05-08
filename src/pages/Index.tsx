@@ -12,6 +12,7 @@ import { FavoritesPanel } from "@/components/FavoritesPanel";
 import { QuestLadderPanel } from "@/components/QuestLadderPanel";
 import { WallMarket } from "@/components/WallMarket";
 import { Leaderboard } from "@/components/Leaderboard";
+import { NewsPanel } from "@/components/NewsPanel";
 import { ColorPalettePanel } from "@/components/ColorPalettePanel";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -255,6 +256,7 @@ const Index = () => {
         onEditProfile={() => setEditOpen(true)}
         canAdd={!!profile && !profile.is_banned && recentlyCreated < hourlyCap}
         inboxSlot={<Inbox userId={user?.id ?? null} />}
+        newsSlot={<NewsPanel userId={user?.id ?? null} />}
         favoritesSlot={<FavoritesPanel userId={user?.id ?? null} onJumpTo={jumpToWorld} />}
         dailySlot={<QuestLadderPanel userId={user?.id ?? null} />}
         marketSlot={<WallMarket userId={user?.id ?? null} />}

@@ -83,6 +83,65 @@ export type Database = {
         }
         Relationships: []
       }
+      guild_members: {
+        Row: {
+          guild_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          guild_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          guild_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guild_members_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: false
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guilds: {
+        Row: {
+          color: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          owner_id?: string
+        }
+        Relationships: []
+      }
       inbox_notifications: {
         Row: {
           actor_id: string | null
@@ -116,12 +175,43 @@ export type Database = {
         }
         Relationships: []
       }
+      news_claims: {
+        Row: {
+          claimed_at: string
+          coins_awarded: number
+          id: string
+          tokens_awarded: number
+          user_id: string
+          version: string
+          xp_awarded: number
+        }
+        Insert: {
+          claimed_at?: string
+          coins_awarded?: number
+          id?: string
+          tokens_awarded?: number
+          user_id: string
+          version: string
+          xp_awarded?: number
+        }
+        Update: {
+          claimed_at?: string
+          coins_awarded?: number
+          id?: string
+          tokens_awarded?: number
+          user_id?: string
+          version?: string
+          xp_awarded?: number
+        }
+        Relationships: []
+      }
       note_comments: {
         Row: {
           content: string
           created_at: string
           id: string
           note_id: string
+          parent_id: string | null
           user_id: string
         }
         Insert: {
@@ -129,6 +219,7 @@ export type Database = {
           created_at?: string
           id?: string
           note_id: string
+          parent_id?: string | null
           user_id: string
         }
         Update: {
@@ -136,9 +227,18 @@ export type Database = {
           created_at?: string
           id?: string
           note_id?: string
+          parent_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "note_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "note_comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       note_favorites: {
         Row: {
@@ -446,6 +546,65 @@ export type Database = {
         }
         Relationships: []
       }
+      sticker_battle_votes: {
+        Row: {
+          battle_id: string
+          choice: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          battle_id: string
+          choice: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          battle_id?: string
+          choice?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sticker_battle_votes_battle_id_fkey"
+            columns: ["battle_id"]
+            isOneToOne: false
+            referencedRelation: "sticker_battles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sticker_battles: {
+        Row: {
+          battle_date: string
+          created_at: string
+          emoji_a: string
+          emoji_b: string
+          ends_at: string
+          id: string
+        }
+        Insert: {
+          battle_date: string
+          created_at?: string
+          emoji_a: string
+          emoji_b: string
+          ends_at: string
+          id?: string
+        }
+        Update: {
+          battle_date?: string
+          created_at?: string
+          emoji_a?: string
+          emoji_b?: string
+          ends_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       user_currency: {
         Row: {
           best_streak: number
@@ -600,6 +759,16 @@ export type Database = {
     Functions: {
       award_xp: { Args: { _uid: string; _xp: number }; Returns: undefined }
       calc_level: { Args: { _xp: number }; Returns: number }
+      claim_news_reward: {
+        Args: { _version: string }
+        Returns: {
+          coins: number
+          message: string
+          success: boolean
+          tokens: number
+          xp: number
+        }[]
+      }
       complete_quest: {
         Args: { _quest_id: string }
         Returns: {
@@ -622,11 +791,61 @@ export type Database = {
           total_tokens: number
         }[]
       }
+      create_guild: {
+        Args: { _color: string; _description: string; _name: string }
+        Returns: {
+          guild_id: string
+          message: string
+          success: boolean
+        }[]
+      }
       equip_cosmetic: {
         Args: { _item_key: string }
         Returns: {
           message: string
           success: boolean
+        }[]
+      }
+      get_daily_event: {
+        Args: never
+        Returns: {
+          description: string
+          event_date: string
+          kind: string
+          target: number
+          title: string
+        }[]
+      }
+      get_daily_event_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_key: string
+          nickname: string
+          rank: number
+          score: number
+          user_id: string
+        }[]
+      }
+      get_guild_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          color: string
+          guild_id: string
+          member_count: number
+          name: string
+          rank: number
+          total_xp: number
+        }[]
+      }
+      get_guild_members: {
+        Args: { _guild_id: string }
+        Returns: {
+          avatar_key: string
+          joined_at: string
+          nickname: string
+          role: string
+          user_id: string
+          xp: number
         }[]
       }
       get_level_leaderboard: {
@@ -639,6 +858,28 @@ export type Database = {
           rank: number
           user_id: string
           xp: number
+        }[]
+      }
+      get_my_guild: {
+        Args: never
+        Returns: {
+          color: string
+          description: string
+          guild_id: string
+          member_count: number
+          name: string
+          role: string
+          total_xp: number
+        }[]
+      }
+      get_my_news_claims: {
+        Args: never
+        Returns: {
+          claimed_at: string
+          coins_awarded: number
+          tokens_awarded: number
+          version: string
+          xp_awarded: number
         }[]
       }
       get_my_wallet: {
@@ -712,6 +953,18 @@ export type Database = {
           type: string
         }[]
       }
+      get_today_battle: {
+        Args: never
+        Returns: {
+          emoji_a: string
+          emoji_b: string
+          ends_at: string
+          id: string
+          my_choice: string
+          votes_a: number
+          votes_b: number
+        }[]
+      }
       get_top_notes: {
         Args: { _limit?: number; _period?: string }
         Returns: {
@@ -740,6 +993,20 @@ export type Database = {
           tokens: number
           total_quests_done: number
           user_id: string
+        }[]
+      }
+      join_guild: {
+        Args: { _guild_id: string }
+        Returns: {
+          message: string
+          success: boolean
+        }[]
+      }
+      leave_guild: {
+        Args: never
+        Returns: {
+          message: string
+          success: boolean
         }[]
       }
       persist_rotation: { Args: never; Returns: undefined }

@@ -1,6 +1,6 @@
 // Bump on each release.
 // Rules: bug/minor +0.0.1, regular +0.1.0, huge +1.0.0
-export const APP_VERSION = "v6.0.1";
+export const APP_VERSION = "v6.1.0";
 
 // Maintenance mode is now controlled automatically — set to false in production.
 // Flip to true only while actively shipping a breaking change, then back to false.
@@ -8,6 +8,15 @@ export const MAINTENANCE_MODE = false;
 export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: "v6.1.0",
+    date: "2026-05-08",
+    notes: [
+      "📰 New News tab — claim a one-time random reward (coins + tokens + XP) for every release, retroactive all the way to v1.0",
+      "🎨 Themes overhauled — every theme now also recolors the background, cards, popovers and dialogs (not just the cork board), so equipping actually visibly changes things",
+      "🧱 Backend ready for Daily Wall Event, Wall Guilds, Sticker Battles and threaded Note Chains (UI lands in v6.1.1)",
+    ],
+  },
   {
     version: "v6.0.1",
     date: "2026-05-07",

@@ -66,25 +66,26 @@
     --sidebar-ring: 25 70% 45%;
   }
 
-  /* Theme variants — recolor cork board + accents */
-  .theme-pastel { --cork-base: 320 60% 80%; --cork-dark: 280 50% 60%; --primary: 320 70% 55%; --ring: 320 70% 55%; }
-  .theme-neon { --cork-base: 280 60% 18%; --cork-dark: 290 80% 30%; --primary: 300 100% 65%; --ring: 180 100% 55%; --foreground: 200 80% 95%; }
-  .theme-midnight { --cork-base: 230 35% 18%; --cork-dark: 230 40% 10%; --primary: 230 80% 65%; --foreground: 220 30% 92%; }
-  .theme-sunset { --cork-base: 18 80% 65%; --cork-dark: 350 70% 45%; --primary: 12 85% 55%; }
-  .theme-forest { --cork-base: 150 35% 35%; --cork-dark: 160 45% 22%; --primary: 145 70% 45%; --foreground: 140 20% 95%; }
-  .theme-ocean { --cork-base: 205 60% 50%; --cork-dark: 215 65% 30%; --primary: 200 90% 50%; --foreground: 200 30% 98%; }
-  .theme-lava { --cork-base: 12 75% 45%; --cork-dark: 0 70% 30%; --primary: 25 100% 55%; --foreground: 35 95% 95%; }
-  .theme-galaxy { --cork-base: 260 45% 22%; --cork-dark: 270 55% 12%; --primary: 280 90% 70%; --foreground: 270 30% 95%; }
-  .theme-cherry { --cork-base: 340 75% 80%; --cork-dark: 350 65% 65%; --primary: 340 85% 55%; }
-  .theme-aurora { --cork-base: 180 50% 30%; --cork-dark: 270 60% 25%; --primary: 160 90% 50%; --foreground: 180 30% 95%; }
-  .theme-matrix { --cork-base: 140 60% 12%; --cork-dark: 140 70% 6%; --primary: 130 100% 50%; --foreground: 130 80% 80%; }
-  .theme-candy { --cork-base: 330 80% 85%; --cork-dark: 50 90% 75%; --primary: 330 90% 60%; }
-  .theme-steel { --cork-base: 220 10% 45%; --cork-dark: 220 12% 28%; --primary: 220 30% 60%; --foreground: 220 10% 95%; }
-  .theme-gold { --cork-base: 42 85% 55%; --cork-dark: 35 75% 35%; --primary: 38 95% 50%; }
-  .theme-ice { --cork-base: 200 80% 80%; --cork-dark: 215 70% 60%; --primary: 200 90% 55%; }
-  .theme-volcano { --cork-base: 0 70% 35%; --cork-dark: 15 80% 20%; --primary: 30 100% 55%; --foreground: 30 90% 95%; }
-  .theme-meadow { --cork-base: 90 55% 60%; --cork-dark: 110 50% 35%; --primary: 100 70% 45%; }
-  .theme-void { --cork-base: 0 0% 8%; --cork-dark: 0 0% 4%; --primary: 0 0% 80%; --foreground: 0 0% 95%; }
+  /* Theme variants — recolor cork board, background, surface & accents.
+     Each theme tweaks --background, --card, --popover so dialogs visibly shift. */
+  .theme-pastel { --background: 320 50% 94%; --card: 320 60% 98%; --popover: 320 60% 98%; --cork-base: 320 60% 80%; --cork-dark: 280 50% 60%; --primary: 320 70% 55%; --ring: 320 70% 55%; --border: 320 30% 80%; }
+  .theme-neon { --background: 280 50% 8%; --foreground: 200 80% 95%; --card: 280 40% 14%; --card-foreground: 200 80% 95%; --popover: 280 40% 14%; --popover-foreground: 200 80% 95%; --muted: 280 30% 18%; --muted-foreground: 200 30% 75%; --border: 280 40% 25%; --cork-base: 280 60% 18%; --cork-dark: 290 80% 30%; --primary: 300 100% 65%; --primary-foreground: 280 50% 8%; --ring: 180 100% 55%; --accent: 180 100% 55%; }
+  .theme-midnight { --background: 230 30% 10%; --foreground: 220 30% 92%; --card: 230 28% 16%; --card-foreground: 220 30% 92%; --popover: 230 28% 16%; --popover-foreground: 220 30% 92%; --muted: 230 20% 20%; --muted-foreground: 220 20% 70%; --border: 230 25% 25%; --cork-base: 230 35% 18%; --cork-dark: 230 40% 10%; --primary: 230 80% 65%; --primary-foreground: 230 30% 10%; --ring: 230 80% 65%; }
+  .theme-sunset { --background: 18 70% 92%; --card: 30 100% 97%; --popover: 30 100% 97%; --cork-base: 18 80% 65%; --cork-dark: 350 70% 45%; --primary: 12 85% 55%; --primary-foreground: 30 100% 97%; --ring: 12 85% 55%; --border: 18 50% 80%; }
+  .theme-forest { --background: 150 25% 12%; --foreground: 140 20% 95%; --card: 150 22% 18%; --card-foreground: 140 20% 95%; --popover: 150 22% 18%; --popover-foreground: 140 20% 95%; --muted: 150 18% 22%; --muted-foreground: 140 15% 70%; --border: 150 22% 28%; --cork-base: 150 35% 35%; --cork-dark: 160 45% 22%; --primary: 145 70% 45%; --primary-foreground: 150 25% 12%; --ring: 145 70% 45%; }
+  .theme-ocean { --background: 205 50% 14%; --foreground: 200 30% 98%; --card: 205 45% 20%; --card-foreground: 200 30% 98%; --popover: 205 45% 20%; --popover-foreground: 200 30% 98%; --muted: 205 35% 24%; --muted-foreground: 200 20% 75%; --border: 205 40% 30%; --cork-base: 205 60% 50%; --cork-dark: 215 65% 30%; --primary: 200 90% 50%; --primary-foreground: 205 50% 14%; --ring: 200 90% 50%; }
+  .theme-lava { --background: 12 50% 14%; --foreground: 35 95% 95%; --card: 12 45% 20%; --card-foreground: 35 95% 95%; --popover: 12 45% 20%; --popover-foreground: 35 95% 95%; --muted: 12 35% 24%; --muted-foreground: 35 30% 75%; --border: 12 40% 30%; --cork-base: 12 75% 45%; --cork-dark: 0 70% 30%; --primary: 25 100% 55%; --primary-foreground: 12 50% 14%; --ring: 25 100% 55%; }
+  .theme-galaxy { --background: 260 40% 10%; --foreground: 270 30% 95%; --card: 260 35% 16%; --card-foreground: 270 30% 95%; --popover: 260 35% 16%; --popover-foreground: 270 30% 95%; --muted: 260 28% 22%; --muted-foreground: 270 20% 75%; --border: 260 30% 28%; --cork-base: 260 45% 22%; --cork-dark: 270 55% 12%; --primary: 280 90% 70%; --primary-foreground: 260 40% 10%; --ring: 280 90% 70%; }
+  .theme-cherry { --background: 340 60% 95%; --card: 340 80% 99%; --popover: 340 80% 99%; --cork-base: 340 75% 80%; --cork-dark: 350 65% 65%; --primary: 340 85% 55%; --primary-foreground: 340 80% 99%; --ring: 340 85% 55%; --border: 340 40% 82%; }
+  .theme-aurora { --background: 200 40% 12%; --foreground: 180 30% 95%; --card: 200 35% 18%; --card-foreground: 180 30% 95%; --popover: 200 35% 18%; --popover-foreground: 180 30% 95%; --muted: 200 28% 22%; --muted-foreground: 180 20% 75%; --border: 200 30% 28%; --cork-base: 180 50% 30%; --cork-dark: 270 60% 25%; --primary: 160 90% 50%; --primary-foreground: 200 40% 12%; --ring: 160 90% 50%; }
+  .theme-matrix { --background: 140 50% 6%; --foreground: 130 80% 80%; --card: 140 45% 10%; --card-foreground: 130 80% 80%; --popover: 140 45% 10%; --popover-foreground: 130 80% 80%; --muted: 140 35% 14%; --muted-foreground: 130 40% 60%; --border: 140 40% 20%; --cork-base: 140 60% 12%; --cork-dark: 140 70% 6%; --primary: 130 100% 50%; --primary-foreground: 140 50% 6%; --ring: 130 100% 50%; }
+  .theme-candy { --background: 330 70% 95%; --card: 50 100% 98%; --popover: 50 100% 98%; --cork-base: 330 80% 85%; --cork-dark: 50 90% 75%; --primary: 330 90% 60%; --primary-foreground: 50 100% 98%; --ring: 330 90% 60%; --border: 330 50% 85%; }
+  .theme-steel { --background: 220 12% 16%; --foreground: 220 10% 95%; --card: 220 12% 22%; --card-foreground: 220 10% 95%; --popover: 220 12% 22%; --popover-foreground: 220 10% 95%; --muted: 220 10% 26%; --muted-foreground: 220 10% 70%; --border: 220 12% 32%; --cork-base: 220 10% 45%; --cork-dark: 220 12% 28%; --primary: 220 30% 60%; --primary-foreground: 220 12% 16%; --ring: 220 30% 60%; }
+  .theme-gold { --background: 42 70% 90%; --card: 42 100% 97%; --popover: 42 100% 97%; --cork-base: 42 85% 55%; --cork-dark: 35 75% 35%; --primary: 38 95% 50%; --primary-foreground: 42 100% 97%; --ring: 38 95% 50%; --border: 38 50% 75%; }
+  .theme-ice { --background: 200 60% 92%; --card: 200 80% 98%; --popover: 200 80% 98%; --cork-base: 200 80% 80%; --cork-dark: 215 70% 60%; --primary: 200 90% 55%; --primary-foreground: 200 80% 98%; --ring: 200 90% 55%; --border: 200 40% 80%; }
+  .theme-volcano { --background: 0 50% 12%; --foreground: 30 90% 95%; --card: 0 45% 18%; --card-foreground: 30 90% 95%; --popover: 0 45% 18%; --popover-foreground: 30 90% 95%; --muted: 0 35% 22%; --muted-foreground: 30 30% 75%; --border: 0 40% 28%; --cork-base: 0 70% 35%; --cork-dark: 15 80% 20%; --primary: 30 100% 55%; --primary-foreground: 0 50% 12%; --ring: 30 100% 55%; }
+  .theme-meadow { --background: 90 40% 92%; --card: 90 60% 97%; --popover: 90 60% 97%; --cork-base: 90 55% 60%; --cork-dark: 110 50% 35%; --primary: 100 70% 45%; --primary-foreground: 90 60% 97%; --ring: 100 70% 45%; --border: 90 30% 78%; }
+  .theme-void { --background: 0 0% 4%; --foreground: 0 0% 95%; --card: 0 0% 9%; --card-foreground: 0 0% 95%; --popover: 0 0% 9%; --popover-foreground: 0 0% 95%; --muted: 0 0% 14%; --muted-foreground: 0 0% 65%; --border: 0 0% 20%; --cork-base: 0 0% 8%; --cork-dark: 0 0% 4%; --primary: 0 0% 80%; --primary-foreground: 0 0% 4%; --ring: 0 0% 80%; }
   .theme-matte {
     --background: 0 0% 6%; --foreground: 0 0% 92%;
     --card: 0 0% 9%; --card-foreground: 0 0% 95%;
@@ -96,7 +97,7 @@
     --border: 0 0% 18%; --input: 0 0% 16%; --ring: 0 0% 80%;
     --cork-base: 0 0% 5%; --cork-dark: 0 0% 2%;
   }
-  .theme-rainbow { --cork-base: 280 70% 55%; --cork-dark: 200 80% 45%; --primary: 320 90% 60%; --foreground: 0 0% 100%; }
+  .theme-rainbow { --background: 280 50% 14%; --foreground: 0 0% 100%; --card: 280 50% 20%; --card-foreground: 0 0% 100%; --popover: 280 50% 20%; --popover-foreground: 0 0% 100%; --muted: 280 35% 24%; --muted-foreground: 0 0% 80%; --border: 280 40% 30%; --cork-base: 280 70% 55%; --cork-dark: 200 80% 45%; --primary: 320 90% 60%; --primary-foreground: 280 50% 14%; --ring: 320 90% 60%; }
 
   .dark {
     --background: 25 20% 12%;

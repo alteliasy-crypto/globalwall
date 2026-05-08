@@ -33,6 +33,7 @@ interface Props {
   onDeleteAllMine: () => void;
   canAdd: boolean;
   inboxSlot?: React.ReactNode;
+  newsSlot?: React.ReactNode;
   favoritesSlot?: React.ReactNode;
   dailySlot?: React.ReactNode;
   marketSlot?: React.ReactNode;
@@ -71,7 +72,7 @@ const FREE_THEMES = new Set(["default", "matte", "void"]);
 
 export const Toolbar = ({
   userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote,
-  onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, favoritesSlot, dailySlot,
+  onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, newsSlot, favoritesSlot, dailySlot,
   marketSlot, leaderboardSlot, colorsSlot,
 }: Props) => {
   const [currentTheme, setCurrentTheme] = useState<string>("default");
@@ -139,6 +140,7 @@ export const Toolbar = ({
             {marketSlot}
             {favoritesSlot}
             {dailySlot}
+            {newsSlot}
             {inboxSlot}
             <ProfileSearch />
           </div>
