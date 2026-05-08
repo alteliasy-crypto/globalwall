@@ -213,13 +213,6 @@ export const WallMarket = ({ userId }: Props) => {
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/40 px-4 py-2">
               <TabsList className="rounded-full">
                 <TabsTrigger value="rotation" className="rounded-full">🔥 Rotation</TabsTrigger>
-                <TabsTrigger value="theme" className="rounded-full">Themes</TabsTrigger>
-                <TabsTrigger value="badge" className="rounded-full">Badges</TabsTrigger>
-                <TabsTrigger value="fx" className="rounded-full">FX</TabsTrigger>
-                <TabsTrigger value="frame" className="rounded-full">Frames</TabsTrigger>
-                <TabsTrigger value="font" className="rounded-full">Fonts</TabsTrigger>
-                <TabsTrigger value="title" className="rounded-full">Titles</TabsTrigger>
-                <TabsTrigger value="boost" className="rounded-full">Boosts</TabsTrigger>
                 <TabsTrigger value="owned" className="rounded-full">My Stuff</TabsTrigger>
               </TabsList>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
