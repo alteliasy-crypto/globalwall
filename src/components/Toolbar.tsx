@@ -138,6 +138,7 @@ export const Toolbar = ({
           <div className="flex items-center gap-1 rounded-full border border-border/40 bg-muted/40 p-0.5">
             {colorsSlot}
             {leaderboardSlot}
+            {communitySlot}
             {marketSlot}
             {favoritesSlot}
             {dailySlot}
