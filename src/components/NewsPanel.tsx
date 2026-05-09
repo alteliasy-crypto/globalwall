@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Newspaper, Coins, Gem, Sparkles, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DEV_NOTES } from "@/lib/version";
+import { notifyQuestRefresh } from "@/hooks/useQuests";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
