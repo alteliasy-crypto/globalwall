@@ -34,6 +34,7 @@ export const NewsPanel = ({ userId }: Props) => {
     const row = (data ?? [])[0];
     if (!row?.success) { toast.error(row?.message ?? "Couldn't claim"); return; }
     toast.success(`+${row.coins} 🪙 +${row.tokens} 💎 +${row.xp} XP`);
+    notifyQuestRefresh();
     void load();
   };
 
