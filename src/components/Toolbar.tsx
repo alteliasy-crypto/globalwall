@@ -74,7 +74,7 @@ const FREE_THEMES = new Set(["default", "matte", "void"]);
 export const Toolbar = ({
   userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote,
   onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, newsSlot, favoritesSlot, dailySlot,
-  marketSlot, leaderboardSlot, colorsSlot,
+  marketSlot, leaderboardSlot, communitySlot, colorsSlot,
 }: Props) => {
   const [currentTheme, setCurrentTheme] = useState<string>("default");
   const [ownedThemes, setOwnedThemes] = useState<Set<string>>(new Set(FREE_THEMES));
