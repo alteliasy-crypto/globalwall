@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Newspaper, Coins, Gem, Sparkles, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { DEV_NOTES } from "@/lib/version";
+import { notifyQuestRefresh } from "@/hooks/useQuests";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ export const NewsPanel = ({ userId }: Props) => {
     const row = (data ?? [])[0];
     if (!row?.success) { toast.error(row?.message ?? "Couldn't claim"); return; }
     toast.success(`+${row.coins} 🪙 +${row.tokens} 💎 +${row.xp} XP`);
+    notifyQuestRefresh();
     void load();
   };
 

@@ -38,6 +38,7 @@ interface Props {
   dailySlot?: React.ReactNode;
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
+  communitySlot?: React.ReactNode;
   colorsSlot?: React.ReactNode;
   deviceMode?: any;
   onDeviceModeChange?: any;
@@ -73,7 +74,7 @@ const FREE_THEMES = new Set(["default", "matte", "void"]);
 export const Toolbar = ({
   userId, nickname, avatarKey, myCount, noteCap, totalCount, newColor, setNewColor, onAddNote,
   onSignOut, onEditProfile, onDeleteAllMine, canAdd, inboxSlot, newsSlot, favoritesSlot, dailySlot,
-  marketSlot, leaderboardSlot, colorsSlot,
+  marketSlot, leaderboardSlot, communitySlot, colorsSlot,
 }: Props) => {
   const [currentTheme, setCurrentTheme] = useState<string>("default");
   const [ownedThemes, setOwnedThemes] = useState<Set<string>>(new Set(FREE_THEMES));
@@ -137,6 +138,7 @@ export const Toolbar = ({
           <div className="flex items-center gap-1 rounded-full border border-border/40 bg-muted/40 p-0.5">
             {colorsSlot}
             {leaderboardSlot}
+            {communitySlot}
             {marketSlot}
             {favoritesSlot}
             {dailySlot}

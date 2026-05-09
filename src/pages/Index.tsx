@@ -13,6 +13,7 @@ import { QuestLadderPanel } from "@/components/QuestLadderPanel";
 import { WallMarket } from "@/components/WallMarket";
 import { Leaderboard } from "@/components/Leaderboard";
 import { NewsPanel } from "@/components/NewsPanel";
+import { CommunityPanel } from "@/components/CommunityPanel";
 import { ColorPalettePanel } from "@/components/ColorPalettePanel";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { useMyProfile } from "@/hooks/useMyProfile";
@@ -261,6 +262,7 @@ const Index = () => {
         dailySlot={<QuestLadderPanel userId={user?.id ?? null} />}
         marketSlot={<WallMarket userId={user?.id ?? null} />}
         leaderboardSlot={<Leaderboard userId={user?.id ?? null} />}
+        communitySlot={<CommunityPanel userId={user?.id ?? null} />}
         colorsSlot={
           <ColorPalettePanel
             value={newColor}
