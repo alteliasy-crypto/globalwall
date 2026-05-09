@@ -262,6 +262,7 @@ const Index = () => {
         dailySlot={<QuestLadderPanel userId={user?.id ?? null} />}
         marketSlot={<WallMarket userId={user?.id ?? null} />}
         leaderboardSlot={<Leaderboard userId={user?.id ?? null} />}
+        communitySlot={<CommunityPanel userId={user?.id ?? null} />}
         colorsSlot={
           <ColorPalettePanel
             value={newColor}
