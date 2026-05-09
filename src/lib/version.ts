@@ -9,6 +9,15 @@ export const MAINTENANCE_ETA = "~5 minutes";
 
 export const DEV_NOTES: { version: string; date: string; notes: string[] }[] = [
   {
+    version: "v6.1.1",
+    date: "2026-05-09",
+    notes: [
+      "👥 New Community panel — Daily Wall Event leaderboard, Sticker Battle of the day, Wall Guilds (create/join/leave + top-guild board), and a Levels leaderboard, all in one tab",
+      "💰 Fixed: claiming a News reward now refreshes your wallet balance instantly across the app",
+      "🐛 Fixed: 'column reference \"bucket\" is ambiguous' crash when the shop rotation tried to persist itself after a purchase",
+    ],
+  },
+  {
     version: "v6.1.0",
     date: "2026-05-08",
     notes: [
