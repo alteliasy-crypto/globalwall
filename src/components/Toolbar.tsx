@@ -38,6 +38,7 @@ interface Props {
   dailySlot?: React.ReactNode;
   marketSlot?: React.ReactNode;
   leaderboardSlot?: React.ReactNode;
+  communitySlot?: React.ReactNode;
   colorsSlot?: React.ReactNode;
   deviceMode?: any;
   onDeviceModeChange?: any;
